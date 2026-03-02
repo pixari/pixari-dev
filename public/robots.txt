@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+Disallow: /404
+
+# AI / LLM crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+Sitemap: https://pixari.dev/sitemap.xml
+

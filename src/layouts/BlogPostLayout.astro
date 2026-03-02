@@ -1,0 +1,140 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Nav from '../components/nav/Nav.astro';
+import CommandPalette from '../components/nav/CommandPalette.astro';
+import '../styles/blog.css';
+import type { CollectionEntry } from 'astro:content';
+import { getPostSlug } from '../utils/posts';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+  rawContent?: string;
+}
+
+const { post, rawContent = '' } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, tags, excerpt } = post.data;
+const slug = getPostSlug(post);
+
+const formattedDate = pubDate.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const ogDescription = excerpt ?? description ?? '';
+
+// Reading time (avg 200 wpm)
+const wordCount = rawContent.trim().split(/\s+/).length;
+const readingMinutes = Math.max(1, Math.round(wordCount / 200));
+
+const postUrl = `https://pixari.dev/${slug}/`;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  'mainEntityOfPage': { '@type': 'WebPage', '@id': postUrl },
+  'headline': title,
+  'description': ogDescription || description,
+  'url': postUrl,
+  'datePublished': pubDate.toISOString(),
+  ...(updatedDate ? { 'dateModified': updatedDate.toISOString() } : {}),
+  ...(heroImage ? { 'image': heroImage.startsWith('http') ? heroImage : `https://pixari.dev${heroImage}` } : {}),
+  'author': {
+    '@type': 'Person',
+    'name': 'Raffaele Pizzari',
+    'url': 'https://pixari.dev',
+  },
+  'publisher': {
+    '@type': 'Person',
+    'name': 'Raffaele Pizzari',
+    'url': 'https://pixari.dev',
+  },
+  'keywords': tags.join(', '),
+  'timeRequired': `PT${readingMinutes}M`,
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  'itemListElement': [
+    { '@type': 'ListItem', 'position': 1, 'name': 'Home',  'item': 'https://pixari.dev/' },
+    { '@type': 'ListItem', 'position': 2, 'name': 'Blog',  'item': 'https://pixari.dev/blog/' },
+    { '@type': 'ListItem', 'position': 3, 'name': title,   'item': postUrl },
+  ],
+};
+---
+
+<BaseLayout
+  title={title}
+  description={ogDescription || description}
+  canonical={postUrl}
+  ogType="article"
+  ogImage={heroImage}
+  pubDate={pubDate}
+  updatedDate={updatedDate}
+  tags={tags}
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  </Fragment>
+
+  <Nav activePage="blog" />
+  <CommandPalette />
+
+  <main>
+    <article>
+      <div class="post-header">
+        <a href="/blog/" class="post-back">← All posts</a>
+
+        {tags.length > 0 && (
+          <div class="post-tags">
+            {tags.map((tag) => <span class="post-tag">{tag}</span>)}
+          </div>
+        )}
+
+        <h1 class="post-title">{title}</h1>
+
+        {description && <p class="post-description">{description}</p>}
+
+        <div class="post-meta">
+          <time datetime={pubDate.toISOString()}>{formattedDate}</time>
+          <span>·</span>
+          <span>{readingMinutes} min read</span>
+          {updatedDate && (
+            <>
+              <span>·</span>
+              <span>Updated <time datetime={updatedDate.toISOString()}>
+                {updatedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+              </time></span>
+            </>
+          )}
+        </div>
+      </div>
+
+      {heroImage && (
+        <div style="max-width:760px;margin:0 auto;padding:0 2rem 2rem;">
+          <img src={heroImage} alt={title} style="width:100%;border-radius:12px;" />
+        </div>
+      )}
+
+      <div class="post-body">
+        <slot />
+      </div>
+    </article>
+  </main>
+
+  <script>
+    import { initTheme } from '../scripts/theme';
+    import { initScrollReveal } from '../scripts/scroll-reveal';
+    import { initAmbientGlow } from '../scripts/ambient-glow';
+    import { initCommandPalette } from '../scripts/command-palette';
+    import { initNav } from '../scripts/nav';
+
+    initTheme();
+    initScrollReveal();
+    initAmbientGlow();
+    initCommandPalette();
+    initNav();
+  </script>
+</BaseLayout>

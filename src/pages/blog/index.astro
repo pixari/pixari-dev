@@ -1,0 +1,104 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/nav/Nav.astro';
+import CommandPalette from '../../components/nav/CommandPalette.astro';
+import { getPostSlug } from '../../utils/posts';
+import '../../styles/blog.css';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const [featured, ...rest] = posts;
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+function formatDateShort(date: Date) {
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+---
+
+<BaseLayout
+  title="Blog | pixari.dev"
+  description="Writing about engineering, AI, leadership, and building digital products."
+>
+  <Nav activePage="blog" />
+  <CommandPalette />
+
+  <main>
+
+    <!-- ── Blog header ── -->
+    <div class="blog-page-header">
+      <p class="section-label">Writing</p>
+      <h1 class="blog-page-title">pixari.<span class="gradient-text">blog</span></h1>
+      <p class="blog-page-subtitle">
+        Notes on engineering, AI, leadership, and building things that matter.
+      </p>
+    </div>
+
+    <!-- ── Featured post ── -->
+    {featured && (
+      <div class="blog-page-featured-wrap">
+        <a href={`/${getPostSlug(featured)}/`} class="blog-page-featured">
+          <div class="blog-page-featured-inner">
+            <div class="blog-page-featured-label">
+              <span class="blog-tag-accent">Latest</span>
+              <time datetime={featured.data.pubDate.toISOString()}>
+                {formatDate(featured.data.pubDate)}
+              </time>
+            </div>
+            <h2 class="blog-page-featured-title">{featured.data.title}</h2>
+            <p class="blog-page-featured-excerpt">
+              {featured.data.excerpt ?? featured.data.description ?? ''}
+            </p>
+            <div class="blog-page-featured-footer">
+              {featured.data.tags.map(tag => (
+                <span class="blog-tag">{tag}</span>
+              ))}
+              <span class="blog-read-cta">Read →</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    )}
+
+    <!-- ── Post list ── -->
+    <div class="blog-page-list-wrap">
+      {rest.map((post) => (
+        <a href={`/${getPostSlug(post)}/`} class="blog-page-item">
+          <div class="blog-page-item-meta">
+            <time datetime={post.data.pubDate.toISOString()}>
+              {formatDateShort(post.data.pubDate)}
+            </time>
+            {post.data.tags.slice(0, 2).map(tag => (
+              <span class="blog-tag">{tag}</span>
+            ))}
+          </div>
+          <div class="blog-page-item-body">
+            <h3 class="blog-page-item-title">{post.data.title}</h3>
+            <p class="blog-page-item-excerpt">
+              {post.data.excerpt ?? post.data.description ?? ''}
+            </p>
+          </div>
+          <span class="blog-page-item-arrow">→</span>
+        </a>
+      ))}
+    </div>
+
+  </main>
+</BaseLayout>
+
+<script>
+  import { initTheme } from '../../scripts/theme';
+  import { initScrollReveal } from '../../scripts/scroll-reveal';
+  import { initAmbientGlow } from '../../scripts/ambient-glow';
+  import { initCommandPalette } from '../../scripts/command-palette';
+  import { initNav } from '../../scripts/nav';
+
+  initTheme();
+  initScrollReveal();
+  initAmbientGlow();
+  initCommandPalette();
+  initNav();
+</script>

@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/nav/Nav.astro';
+import CommandPalette from '../components/nav/CommandPalette.astro';
+import '../styles/blog.css';
+---
+
+<BaseLayout
+  title="Reading | pixari.dev"
+  description="Books, articles, and resources Raffaele Pizzari is reading and recommending."
+>
+  <Nav />
+  <CommandPalette />
+
+  <main>
+    <div class="blog-header">
+      <p class="section-label">Reading</p>
+      <h1 class="section-title">What I'm reading</h1>
+      <p style="color:var(--text-secondary);font-weight:300;max-width:560px;">
+        A running list of books, articles, and resources I find worth your time.
+      </p>
+    </div>
+
+    <div style="max-width:1100px;margin:0 auto;padding:0 2rem 8rem;">
+      <p style="color:var(--text-secondary);font-size:1.05rem;font-weight:300;">
+        Content being migrated — check back soon.
+      </p>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  import { initTheme } from '../scripts/theme';
+  import { initScrollReveal } from '../scripts/scroll-reveal';
+  import { initAmbientGlow } from '../scripts/ambient-glow';
+  import { initCommandPalette } from '../scripts/command-palette';
+  import { initNav } from '../scripts/nav';
+
+  initTheme();
+  initScrollReveal();
+  initAmbientGlow();
+  initCommandPalette();
+  initNav();
+</script>

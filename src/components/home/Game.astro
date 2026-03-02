@@ -1,0 +1,65 @@
+---
+// Career Climber game section
+---
+
+<section id="game">
+  <div class="section-container">
+    <p class="section-label reveal">Bonus Level</p>
+    <h2 class="section-title reveal">Career <span class="gradient-text">Climber</span></h2>
+    <p class="game-description reveal">
+      A tiny platformer through my career &mdash; jump from Rome to Munich,
+      collecting skills along the way.
+    </p>
+    <div class="game-wrapper reveal">
+      <canvas id="game-canvas" width="800" height="400"></canvas>
+      <div class="game-overlay" id="game-start">
+        <div class="game-overlay-content">
+          <h3>Career Climber</h3>
+          <p>Arrow keys to move &middot; Space to jump</p>
+          <p id="game-pb" style="font-size:0.8em;opacity:0.6;margin:0"></p>
+          <button class="btn btn-primary" id="game-start-btn">Play</button>
+        </div>
+      </div>
+      <div class="game-hud" id="game-hud">
+        <span id="game-role">Student</span>
+        <span id="game-skills"></span>
+        <button
+          id="game-mute-btn"
+          style="background:none;border:none;cursor:pointer;font-size:1.2rem;margin-left:1rem;padding:0;color:inherit;"
+          title="Toggle Music"
+        >🔊</button>
+      </div>
+      <div class="game-overlay" id="game-win" style="display:none">
+        <div class="game-overlay-content">
+          <h3>Career Complete!</h3>
+          <p id="game-stats"></p>
+          <button class="btn btn-primary" id="game-restart-btn">Play Again</button>
+        </div>
+      </div>
+      <div class="game-touch-controls" id="game-touch">
+        <div class="game-touch-group">
+          <button class="game-touch-btn" data-action="left">&larr;</button>
+          <button class="game-touch-btn" data-action="right">&rarr;</button>
+        </div>
+        <div class="game-touch-group">
+          <button class="game-touch-btn" data-action="jump">&uarr;</button>
+        </div>
+      </div>
+    </div>
+    <p class="game-controls-hint reveal">
+      Arrow keys or WASD to move &middot; Space to jump &middot; On mobile, use the on-screen controls
+    </p>
+  </div>
+</section>
+
+<script>
+  import { initGame } from '../../game/Game.js';
+
+  const startBtn = document.getElementById('game-start-btn');
+  const restartBtn = document.getElementById('game-restart-btn');
+
+  initGame();
+
+  startBtn?.addEventListener('click', () => { if ((window as any).gInit) (window as any).gInit(); });
+  restartBtn?.addEventListener('click', () => { if ((window as any).gInit) (window as any).gInit(); });
+</script>

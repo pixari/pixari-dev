@@ -1,0 +1,61 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { getPostSlug } from '../../utils/posts';
+
+interface Props {
+  posts: CollectionEntry<'blog'>[];
+}
+
+const { posts } = Astro.props;
+const [featured, ...rest] = posts;
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+---
+
+<section id="blog">
+  <div class="section-container">
+    <p class="section-label reveal">Writing</p>
+    <h2 class="section-title reveal">From the blog</h2>
+
+    {featured && (
+      <a href={`/${getPostSlug(featured)}/`} class="blog-featured reveal">
+        <div class="blog-featured-meta">
+          <span class="blog-featured-label">Latest</span>
+          <time>{formatDate(featured.data.pubDate)}</time>
+          {featured.data.tags.slice(0, 2).map(tag => (
+            <span class="blog-tag">{tag}</span>
+          ))}
+        </div>
+        <h3 class="blog-featured-title">{featured.data.title}</h3>
+        <p class="blog-featured-excerpt">{featured.data.excerpt ?? featured.data.description ?? ''}</p>
+        <span class="blog-featured-cta">Read post →</span>
+      </a>
+    )}
+
+    {rest.length > 0 && (
+      <div class="blog-list">
+        {rest.map((post, i) => (
+          <a
+            href={`/${getPostSlug(post)}/`}
+            class={`blog-list-item reveal reveal-delay-${i + 1}`}
+          >
+            <div class="blog-list-meta">
+              <time>{formatDate(post.data.pubDate)}</time>
+              {post.data.tags.slice(0, 1).map(tag => (
+                <span class="blog-tag">{tag}</span>
+              ))}
+            </div>
+            <h4 class="blog-list-title">{post.data.title}</h4>
+            <p class="blog-list-excerpt">{post.data.excerpt ?? post.data.description ?? ''}</p>
+          </a>
+        ))}
+      </div>
+    )}
+
+    <div class="blog-more reveal">
+      <a href="/blog/" class="btn btn-ghost">All posts →</a>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,21 @@
+{
+  "name": "pixari.dev",
+  "short_name": "pixari",
+  "description": "Senior Engineering Manager in Munich. Writing about engineering, AI, and leadership.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0c",
+  "theme_color": "#0a0a0c",
+  "icons": [
+    {
+      "src": "/images/raffaele-pizzari-200.jpg",
+      "sizes": "200x200",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "/images/raffaele-pizzari-400.jpg",
+      "sizes": "400x400",
+      "type": "image/jpeg"
+    }
+  ]
+}
