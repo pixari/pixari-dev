@@ -1,7 +1,7 @@
 ---
 title: "Why Your Team's Docs Are a Strategic Asset (Not an Afterthought)"
 pubDate: "2025-06-03"
-tags: []
+tags: ["Engineering", "Leadership"]
 ---
 
 Good documentation is more than just a chore; it's a strategic asset that can transform how your engineering team operates.

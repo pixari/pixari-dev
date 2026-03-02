@@ -1,7 +1,7 @@
 ---
 title: "When the hard part was the point"
 pubDate: "2025-11-24"
-tags: []
+tags: ["Personal", "Engineering"]
 ---
 
 I still remember the weight of the book.

@@ -1,7 +1,7 @@
 ---
 title: "The Year I Stopped Apologizing for the Chaos"
 pubDate: "2025-12-19"
-tags: []
+tags: ["Personal", "Leadership"]
 ---
 
 Let’s look at the data, because that’s usually where I feel safe.

@@ -1,7 +1,7 @@
 ---
 title: "Don't ask AI to build the house. Ask it to build the scaffolding."
 pubDate: "2025-11-30"
-tags: []
+tags: ["AI", "Engineering"]
 ---
 
 The noise level in our industry right now is deafening.

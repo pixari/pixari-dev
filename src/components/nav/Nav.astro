@@ -16,11 +16,8 @@ const { activePage = 'home' } = Astro.props;
       <li><a href="/#game">Game</a></li>
       <li><a href="/#contact">Contact</a></li>
     </ul>
-    <div style="display:flex;align-items:center;gap:0.5rem;">
-      <span class="cmd-hint" onclick="window.openCmdPalette()" aria-label="Open command palette">
-        <kbd>⌘K</kbd>
-      </span>
-      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">☾</button>
-    </div>
+    <span class="cmd-hint" onclick="window.openCmdPalette()" aria-label="Open command palette">
+      <kbd>⌘K</kbd>
+    </span>
   </nav>
 </header>

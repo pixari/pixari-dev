@@ -1,5 +1,16 @@
 ---
-// Command palette markup — logic lives in src/scripts/command-palette.ts
+import { getCollection } from 'astro:content';
+import { getPostSlug } from '../../utils/posts';
+
+const posts = await getCollection('blog', ({ data }) => !data.draft);
+const postData = posts
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .map((p) => ({
+    slug: getPostSlug(p),
+    title: p.data.title,
+    desc: p.data.excerpt ?? p.data.description ?? '',
+    tags: p.data.tags,
+  }));
 ---
 
 <div class="cmd-overlay" id="cmdPalette" onclick="if(event.target===this)window.closeCmdPalette()">
@@ -13,7 +24,7 @@
         class="cmd-input"
         id="cmdInput"
         type="text"
-        placeholder="Type a command or search..."
+        placeholder="Search pages, posts, actions…"
         autocomplete="off"
       />
       <span class="cmd-kbd">ESC</span>
@@ -21,3 +32,6 @@
     <div class="cmd-results" id="cmdResults"></div>
   </div>
 </div>
+
+<!-- Post data injected at build time for client-side search -->
+<script type="application/json" id="cmdPosts" set:html={JSON.stringify(postData)} />

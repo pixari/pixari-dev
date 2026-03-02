@@ -1,7 +1,7 @@
 ---
 title: "How I Built My Perfect Family Budget App in Just 3 Days"
 pubDate: "2026-01-20"
-tags: []
+tags: ["Engineering", "Personal"]
 ---
 
 **I was paying €19/month for a pretty pie chart that couldn't tell me what I bought. So I rage-coded a solution using Next.js, AI, and Puppeteer.**

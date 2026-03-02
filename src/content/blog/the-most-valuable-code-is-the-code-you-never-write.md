@@ -1,7 +1,7 @@
 ---
 title: "The Most Valuable Code Is the Code You Never Write"
 pubDate: "2025-06-11"
-tags: []
+tags: ["Engineering"]
 ---
 
 The most valuable code is often the code you never write.

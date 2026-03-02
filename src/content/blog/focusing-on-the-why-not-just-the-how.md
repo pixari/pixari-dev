@@ -1,7 +1,7 @@
 ---
 title: "Focusing on the 'Why', Not Just the 'How'"
 pubDate: "2025-05-03"
-tags: []
+tags: ["Leadership", "Engineering"]
 ---
 
 Many of us in engineering leadership have guided teams through the adoption of **Agile frameworks** like **Scrum** or **Kanban**.

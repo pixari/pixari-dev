@@ -1,7 +1,7 @@
 ---
 title: "Not All Technical Debt Needs to Be Repaid"
 pubDate: "2025-07-11"
-tags: []
+tags: ["Engineering"]
 ---
 
 **Unpopular opinion:** Not all technical debt needs to be repaid.

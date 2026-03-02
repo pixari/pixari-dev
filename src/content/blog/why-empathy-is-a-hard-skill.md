@@ -1,7 +1,7 @@
 ---
 title: "Why Empathy is a Hard Skill"
 pubDate: "2025-08-18"
-tags: []
+tags: ["Leadership"]
 ---
 
 The modern workplace is full of buzzwords, and few are as overused as "empathy." We hear it in every leadership seminar and read about it in every management book. But what does it truly mean to lead with empathy, and how does it translate from a lofty concept into a practical, day-to-day skill.

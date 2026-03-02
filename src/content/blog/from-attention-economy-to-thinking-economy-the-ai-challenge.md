@@ -1,7 +1,7 @@
 ---
 title: "From Attention Economy to Thinking Economy: The AI Challenge"
 pubDate: "2025-05-16"
-tags: []
+tags: ["AI"]
 ---
 
 Imagine a world where your most complex analytical tasks are handled with effortless precision. That future is arriving, but are we prepared for the cognitive shift it demands?

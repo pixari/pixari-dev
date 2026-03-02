@@ -71,11 +71,13 @@ function formatDateShort(date: Date) {
             <time datetime={post.data.pubDate.toISOString()}>
               {formatDateShort(post.data.pubDate)}
             </time>
-            {post.data.tags.slice(0, 2).map(tag => (
-              <span class="blog-tag">{tag}</span>
-            ))}
           </div>
           <div class="blog-page-item-body">
+            {post.data.tags.length > 0 && (
+              <p class="blog-page-item-cats">
+                {post.data.tags.slice(0, 2).join(' · ')}
+              </p>
+            )}
             <h3 class="blog-page-item-title">{post.data.title}</h3>
             <p class="blog-page-item-excerpt">
               {post.data.excerpt ?? post.data.description ?? ''}
@@ -90,7 +92,6 @@ function formatDateShort(date: Date) {
 </BaseLayout>
 
 <script>
-  import { initTheme } from '../../scripts/theme';
   import { initScrollReveal } from '../../scripts/scroll-reveal';
   import { initAmbientGlow } from '../../scripts/ambient-glow';
   import { initCommandPalette } from '../../scripts/command-palette';

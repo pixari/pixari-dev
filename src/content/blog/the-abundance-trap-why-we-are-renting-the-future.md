@@ -1,7 +1,7 @@
 ---
 title: "The Abundance Trap: Why We Are Renting the Future"
 pubDate: "2025-12-14"
-tags: []
+tags: ["AI"]
 ---
 
 I am a daily practitioner of AI. I build with it, I rely on it, and I am optimistic about its potential to remove drudgery from our work.

@@ -1,7 +1,7 @@
 ---
 title: "Imposter Syndrome for New Lead Developers: Overcoming Self-Doubt"
 pubDate: "2025-05-16"
-tags: []
+tags: ["Leadership", "Personal"]
 ---
 
 Stepping into a _Lead Developer_ role often brings a familiar companion: **imposter syndrome**. That quiet, persistent feeling of not quite being "enough" is common in our field. It's a shadow many of us face when taking on more responsibility. If you've felt this, know you're not alone; it was a defining part of my own early leadership journey.

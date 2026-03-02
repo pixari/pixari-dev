@@ -1,7 +1,7 @@
 ---
 title: "I built the tool my public-speaking anxiety needed"
 pubDate: "2026-02-01"
-tags: []
+tags: ["Engineering", "Personal"]
 ---
 
 ![](/images/blog/presentation-mode.png)

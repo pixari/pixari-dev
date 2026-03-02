@@ -1,7 +1,7 @@
 ---
 title: "Betting on Engineering, Not Trends"
 pubDate: "2025-11-19"
-tags: []
+tags: ["Engineering", "AI"]
 ---
 
 Look, I get it. You’re tired of the noise. I am too.

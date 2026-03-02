@@ -42,20 +42,7 @@ const hasLargeImage = !!ogImage; // only use summary_large_image for posts with 
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0a0a0c" media="(prefers-color-scheme: dark)" />
-    <meta name="theme-color" content="#fafaf9" media="(prefers-color-scheme: light)" />
-
-    <!-- Anti-flash theme script — must be first -->
-    <script is:inline>
-      (function () {
-        var s = localStorage.getItem('theme');
-        if (s === 'light') {
-          document.documentElement.classList.add('light');
-        } else if (!s && window.matchMedia('(prefers-color-scheme: light)').matches) {
-          document.documentElement.classList.add('light');
-        }
-      })();
-    </script>
+    <meta name="theme-color" content="#0a0a0c" />
 
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
@@ -119,7 +106,7 @@ const hasLargeImage = !!ogImage; // only use summary_large_image for posts with 
     />
 
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="preload"

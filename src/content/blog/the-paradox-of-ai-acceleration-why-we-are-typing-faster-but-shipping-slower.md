@@ -1,7 +1,7 @@
 ---
 title: "The Paradox of AI-Acceleration: Why We Are Typing Faster but Shipping Slower"
 pubDate: "2025-12-03"
-tags: []
+tags: ["AI", "Engineering"]
 ---
 
 We are deep in the deployment phase of Generative AI.

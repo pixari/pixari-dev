@@ -1,7 +1,7 @@
 ---
 title: "How Product Engineers drive SaaS growth"
 pubDate: "2025-04-16"
-tags: []
+tags: ["Product", "Engineering"]
 ---
 
 Across the SaaS industry, most companies struggle with a **fundamental disconnect** between those who build the product and those who use it. The symptoms of this disconnect manifest in multiple pervasive challenges that undermine product success.

@@ -1,7 +1,7 @@
 ---
 title: "The Trap of the Hero"
 pubDate: "2025-11-26"
-tags: []
+tags: ["Leadership"]
 ---
 
 I remember the exact moment I felt most valuable in my career. It wasn't when I got a promotion, and it wasn't when I saw the exit money.

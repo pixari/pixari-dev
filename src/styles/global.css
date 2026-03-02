@@ -13,19 +13,6 @@
   --gradient-3: #34d399;
 }
 
-html.light {
-  --bg: #fafaf9;
-  --surface: #f5f4f1;
-  --surface-hover: #eeede9;
-  --border: rgba(0, 0, 0, 0.08);
-  --text: #1a1a1c;
-  --text-secondary: #6b6b6f;
-  --accent: #2563eb;
-  --accent-glow: rgba(37, 99, 235, 0.12);
-  --gradient-1: #2563eb;
-  --gradient-2: #7c3aed;
-  --gradient-3: #059669;
-}
 
 * {
   margin: 0;
@@ -61,6 +48,8 @@ body::after {
 /* ── Ambient glow ── */
 .ambient-glow {
   position: fixed;
+  left: 0;
+  top: 0;
   width: 600px;
   height: 600px;
   border-radius: 50%;
@@ -70,7 +59,7 @@ body::after {
   opacity: 0.5;
   transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.8s ease;
   filter: blur(80px);
-  transform: translate(-50%, -50%);
+  will-change: transform;
 }
 
 /* ── Navigation ── */
@@ -107,9 +96,6 @@ nav.scrolled {
   padding-bottom: 0.9rem;
 }
 
-html.light nav.scrolled {
-  background: rgba(250, 250, 249, 0.85);
-}
 
 .nav-logo {
   font-family: 'Instrument Serif', serif;
@@ -211,11 +197,11 @@ html.light nav.scrolled {
 
 .gradient-text {
   background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2), var(--gradient-3));
-  background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: gradientShift 6s ease infinite;
+  animation: gradientShift 8s linear infinite;
+  will-change: filter;
 }
 
 .hero-subtitle {
@@ -259,9 +245,6 @@ html.light nav.scrolled {
   box-shadow: 0 8px 30px rgba(255, 255, 255, 0.15);
 }
 
-html.light .btn-primary:hover {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-}
 
 .btn-ghost {
   background: transparent;
@@ -275,9 +258,6 @@ html.light .btn-primary:hover {
   background: var(--surface);
 }
 
-html.light .btn-ghost:hover {
-  border-color: rgba(0, 0, 0, 0.2);
-}
 
 /* ── Section layout ── */
 section {
@@ -374,9 +354,6 @@ section {
   border-color: rgba(126, 184, 255, 0.15);
 }
 
-html.light .value-card:hover {
-  border-color: rgba(37, 99, 235, 0.2);
-}
 
 .value-card h3 {
   font-size: 1.05rem;
@@ -415,9 +392,6 @@ html.light .value-card:hover {
   border-color: rgba(126, 184, 255, 0.1);
 }
 
-html.light .experience-item:hover {
-  border-color: rgba(37, 99, 235, 0.1);
-}
 
 .exp-date {
   font-size: 0.85rem;
@@ -760,9 +734,6 @@ html.light .experience-item:hover {
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
 }
 
-html.light .blog-card:hover {
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
-}
 
 .blog-card .blog-date {
   font-size: 0.75rem;
@@ -1044,27 +1015,6 @@ footer {
   border-top: 1px solid var(--border);
 }
 
-/* ── Theme toggle ── */
-.theme-toggle {
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
-  cursor: pointer;
-  padding: 0.4rem 0.6rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
-  line-height: 1;
-}
-
-.theme-toggle:hover {
-  color: var(--text);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-html.light .theme-toggle:hover {
-  border-color: rgba(0, 0, 0, 0.2);
-}
 
 /* ── Command palette ── */
 .cmd-overlay {
@@ -1228,8 +1178,8 @@ html.light .theme-toggle:hover {
 }
 
 @keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50%       { background-position: 100% 50%; }
+  0%   { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
 }
 
 /* ── Scroll reveal ── */
@@ -1313,7 +1263,7 @@ html.light .theme-toggle:hover {
     border-color: #ddd !important;
   }
 
-  body::after, .ambient-glow, .cmd-overlay, .theme-toggle,
+  body::after, .ambient-glow, .cmd-overlay,
   .cmd-hint, .hero-cta, .divider, .blog-more,
   .testimonials-toggle, .project-link, footer,
   #blog, #projects, #game, #testimonials {
