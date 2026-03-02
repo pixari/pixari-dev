@@ -1,3 +1,59 @@
+/* ── Custom cursor ── */
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: -4px;
+  left: -4px;
+  pointer-events: none;
+  z-index: 10000;
+  border-radius: 50%;
+  will-change: transform;
+}
+
+.cursor-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  mix-blend-mode: difference;
+}
+
+.cursor-ring {
+  top: -16px;
+  left: -16px;
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid var(--accent);
+  opacity: 0.45;
+  transition: opacity 0.2s ease;
+}
+
+html.custom-cursor,
+html.custom-cursor * {
+  cursor: none !important;
+}
+
+/* ── Reading progress bar ── */
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent);
+  transform-origin: left center;
+  transform: scaleX(0);
+  z-index: 200;
+  border-radius: 0 1px 1px 0;
+  transition: transform 0.08s linear;
+}
+
+/* ── Tilt cards ── */
+[data-tilt] {
+  will-change: transform;
+  transform-style: preserve-3d;
+}
+
+
 /* ── CSS custom properties — dark is default ── */
 :root {
   --bg: #0a0a0c;

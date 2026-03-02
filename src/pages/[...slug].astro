@@ -15,8 +15,22 @@ export const getStaticPaths: GetStaticPaths = async () => {
 const { post } = Astro.props;
 const { Content } = await render(post);
 const rawContent = post.body ?? '';
+
+// Related posts: same tags, sorted by overlap count, max 3
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const currentSlug = getPostSlug(post);
+const related = allPosts
+  .filter((p) => getPostSlug(p) !== currentSlug)
+  .map((p) => ({
+    post: p,
+    score: p.data.tags.filter((t) => post.data.tags.includes(t)).length,
+  }))
+  .filter(({ score }) => score > 0)
+  .sort((a, b) => b.score - a.score || b.post.data.pubDate.valueOf() - a.post.data.pubDate.valueOf())
+  .slice(0, 3)
+  .map(({ post: p }) => p);
 ---
 
-<BlogPostLayout post={post} rawContent={rawContent}>
+<BlogPostLayout post={post} rawContent={rawContent} relatedPosts={related}>
   <Content />
 </BlogPostLayout>

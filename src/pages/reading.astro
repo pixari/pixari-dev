@@ -35,8 +35,10 @@ import '../styles/blog.css';
   import { initCommandPalette } from '../scripts/command-palette';
   import { initNav } from '../scripts/nav';
 
-  initScrollReveal();
-  initAmbientGlow();
-  initCommandPalette();
-  initNav();
+  document.addEventListener('astro:page-load', () => {
+    initScrollReveal();
+    initAmbientGlow();
+    initCommandPalette();
+    initNav();
+  });
 </script>

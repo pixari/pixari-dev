@@ -2,13 +2,23 @@
    Blog tag pill (shared)
 ───────────────────────────────────────────── */
 .blog-tag {
-  font-size: 0.68rem;
-  padding: 0.2rem 0.6rem;
+  display: inline-block;
+  font-size: 0.62rem;
+  padding: 0.18rem 0.55rem;
   border-radius: 100px;
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
-  letter-spacing: 0.03em;
+  background: rgba(126, 184, 255, 0.07);
+  border: 1px solid rgba(126, 184, 255, 0.18);
+  color: var(--accent);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 500;
   white-space: nowrap;
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s;
+}
+a.blog-tag:hover {
+  background: rgba(126, 184, 255, 0.14);
+  border-color: rgba(126, 184, 255, 0.35);
 }
 
 .blog-tag-accent {
@@ -323,14 +333,11 @@
   font-variant-numeric: tabular-nums;
 }
 
-.blog-page-item-cats {
-  font-size: 0.68rem;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--accent);
-  opacity: 0.75;
-  margin-bottom: 0.25rem;
-  font-weight: 500;
+.post-cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
 }
 
 .blog-page-item-title {
@@ -392,7 +399,79 @@
   border-radius: 100px;
   border: 1px solid var(--border);
   color: var(--text-secondary);
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s;
 }
+.post-tag:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Related posts ── */
+.related-posts {
+  border-top: 1px solid var(--border);
+  margin-top: 5rem;
+  padding: 4rem 2rem 6rem;
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.related-posts-inner > .section-label {
+  margin-bottom: 2rem;
+}
+
+.related-posts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.25rem;
+}
+
+.related-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.25s ease, transform 0.08s ease;
+}
+.related-card:hover {
+  border-color: rgba(126, 184, 255, 0.25);
+}
+
+
+.related-card-title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.related-card-excerpt {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-weight: 300;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
+
+.related-card-cta {
+  font-size: 0.78rem;
+  color: var(--accent);
+  opacity: 0.7;
+  margin-top: 0.25rem;
+  transition: opacity 0.2s;
+}
+.related-card:hover .related-card-cta { opacity: 1; }
 
 .post-meta {
   font-size: 0.82rem;

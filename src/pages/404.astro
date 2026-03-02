@@ -92,7 +92,9 @@ import CommandPalette from '../components/nav/CommandPalette.astro';
   import { initCommandPalette } from '../scripts/command-palette';
   import { initNav } from '../scripts/nav';
 
-  initAmbientGlow();
-  initCommandPalette();
-  initNav();
+  document.addEventListener('astro:page-load', () => {
+    initAmbientGlow();
+    initCommandPalette();
+    initNav();
+  });
 </script>

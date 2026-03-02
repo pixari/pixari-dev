@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/nav/Nav.astro';
+import CommandPalette from '../../components/nav/CommandPalette.astro';
+import { getCollection } from 'astro:content';
+import { getPostSlug } from '../../utils/posts';
+import '../../styles/blog.css';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  const tags = [...new Set(posts.flatMap((p) => p.data.tags))];
+  return tags.map((tag) => ({ params: { tag: tag.toLowerCase() } }));
+};
+
+const { tag } = Astro.params;
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const posts = allPosts
+  .filter((p) => p.data.tags.map((t) => t.toLowerCase()).includes(tag!))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const displayTag = posts[0]?.data.tags.find((t) => t.toLowerCase() === tag) ?? tag!;
+
+function formatDateShort(date: Date) {
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+---
+
+<BaseLayout
+  title={`${displayTag} — Blog | pixari.dev`}
+  description={`Writing tagged ${displayTag} — engineering, AI, leadership, and building things that matter.`}
+>
+  <Nav activePage="blog" />
+  <CommandPalette />
+
+  <main>
+    <div class="blog-page-header">
+      <a href="/blog/" class="post-back" style="display:inline-block;margin-bottom:1.5rem;">← All posts</a>
+      <p class="section-label">Category</p>
+      <h1 class="blog-page-title"><span class="gradient-text">{displayTag}</span></h1>
+      <p class="blog-page-subtitle">{posts.length} post{posts.length !== 1 ? 's' : ''}</p>
+    </div>
+
+    <div class="blog-page-list-wrap">
+      {posts.map((post) => (
+        <a href={`/${getPostSlug(post)}/`} class="blog-page-item" transition:name={`post-title-${getPostSlug(post)}`}>
+          <div class="blog-page-item-meta">
+            <time datetime={post.data.pubDate.toISOString()}>
+              {formatDateShort(post.data.pubDate)}
+            </time>
+          </div>
+          <div class="blog-page-item-body">
+            {post.data.tags.length > 0 && (
+              <div class="post-cats">
+                {post.data.tags.slice(0, 2).map(t => (
+                  <a href={`/blog/${t.toLowerCase()}/`} class="blog-tag">{t}</a>
+                ))}
+              </div>
+            )}
+            <h3 class="blog-page-item-title">{post.data.title}</h3>
+            <p class="blog-page-item-excerpt">
+              {post.data.excerpt ?? post.data.description ?? ''}
+            </p>
+          </div>
+          <span class="blog-page-item-arrow">→</span>
+        </a>
+      ))}
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  import { initScrollReveal } from '../../scripts/scroll-reveal';
+  import { initAmbientGlow } from '../../scripts/ambient-glow';
+  import { initCommandPalette } from '../../scripts/command-palette';
+  import { initNav } from '../../scripts/nav';
+  import { initTilt } from '../../scripts/tilt';
+
+  document.addEventListener('astro:page-load', () => {
+    initScrollReveal();
+    initAmbientGlow();
+    initCommandPalette();
+    initNav();
+    initTilt();
+  });
+</script>

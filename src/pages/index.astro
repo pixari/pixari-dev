@@ -62,11 +62,15 @@ const latestPosts = allPosts
   import { initAmbientGlow } from '../scripts/ambient-glow';
   import { initCommandPalette } from '../scripts/command-palette';
   import { initNav } from '../scripts/nav';
+  import { initTilt } from '../scripts/tilt';
 
-  initScrollReveal();
-  initAmbientGlow();
-  initCommandPalette();
-  initNav();
+  document.addEventListener('astro:page-load', () => {
+    initScrollReveal();
+    initAmbientGlow();
+    initCommandPalette();
+    initNav();
+    initTilt();
+  });
 
   (window as any).__updateMousePos = (e: MouseEvent, el: HTMLElement) => {
     const rect = el.getBoundingClientRect();

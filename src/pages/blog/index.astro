@@ -40,7 +40,7 @@ function formatDateShort(date: Date) {
     <!-- ── Featured post ── -->
     {featured && (
       <div class="blog-page-featured-wrap">
-        <a href={`/${getPostSlug(featured)}/`} class="blog-page-featured">
+        <a href={`/${getPostSlug(featured)}/`} class="blog-page-featured" data-tilt>
           <div class="blog-page-featured-inner">
             <div class="blog-page-featured-label">
               <span class="blog-tag-accent">Latest</span>
@@ -48,13 +48,15 @@ function formatDateShort(date: Date) {
                 {formatDate(featured.data.pubDate)}
               </time>
             </div>
-            <h2 class="blog-page-featured-title">{featured.data.title}</h2>
+            <h2 class="blog-page-featured-title" transition:name={`post-title-${getPostSlug(featured)}`}>
+              {featured.data.title}
+            </h2>
             <p class="blog-page-featured-excerpt">
               {featured.data.excerpt ?? featured.data.description ?? ''}
             </p>
             <div class="blog-page-featured-footer">
               {featured.data.tags.map(tag => (
-                <span class="blog-tag">{tag}</span>
+                <a href={`/blog/${tag.toLowerCase()}/`} class="blog-tag">{tag}</a>
               ))}
               <span class="blog-read-cta">Read →</span>
             </div>
@@ -74,11 +76,15 @@ function formatDateShort(date: Date) {
           </div>
           <div class="blog-page-item-body">
             {post.data.tags.length > 0 && (
-              <p class="blog-page-item-cats">
-                {post.data.tags.slice(0, 2).join(' · ')}
-              </p>
+              <div class="post-cats">
+                {post.data.tags.slice(0, 2).map(tag => (
+                  <a href={`/blog/${tag.toLowerCase()}/`} class="blog-tag">{tag}</a>
+                ))}
+              </div>
             )}
-            <h3 class="blog-page-item-title">{post.data.title}</h3>
+            <h3 class="blog-page-item-title" transition:name={`post-title-${getPostSlug(post)}`}>
+              {post.data.title}
+            </h3>
             <p class="blog-page-item-excerpt">
               {post.data.excerpt ?? post.data.description ?? ''}
             </p>
@@ -96,10 +102,13 @@ function formatDateShort(date: Date) {
   import { initAmbientGlow } from '../../scripts/ambient-glow';
   import { initCommandPalette } from '../../scripts/command-palette';
   import { initNav } from '../../scripts/nav';
+  import { initTilt } from '../../scripts/tilt';
 
-  initTheme();
-  initScrollReveal();
-  initAmbientGlow();
-  initCommandPalette();
-  initNav();
+  document.addEventListener('astro:page-load', () => {
+    initScrollReveal();
+    initAmbientGlow();
+    initCommandPalette();
+    initNav();
+    initTilt();
+  });
 </script>

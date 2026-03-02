@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { ViewTransitions } from 'astro:transitions';
 
 interface Props {
   title: string;
@@ -128,6 +129,7 @@ const hasLargeImage = !!ogImage; // only use summary_large_image for posts with 
       data-website-id="1018afca-a1af-4bb0-a2f1-fa53fa96c76d"
     ></script>
 
+    <ViewTransitions />
     <slot name="head" />
   </head>
 
@@ -141,3 +143,9 @@ const hasLargeImage = !!ogImage; // only use summary_large_image for posts with 
     </footer>
   </body>
 </html>
+
+<script>
+  import { initCursor } from '../scripts/cursor';
+  // Cursor only needs to init once; survives View Transitions
+  initCursor();
+</script>

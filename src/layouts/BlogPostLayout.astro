@@ -9,9 +9,10 @@ import { getPostSlug } from '../utils/posts';
 interface Props {
   post: CollectionEntry<'blog'>;
   rawContent?: string;
+  relatedPosts?: CollectionEntry<'blog'>[];
 }
 
-const { post, rawContent = '' } = Astro.props;
+const { post, rawContent = '', relatedPosts = [] } = Astro.props;
 const { title, description, pubDate, updatedDate, heroImage, tags, excerpt } = post.data;
 const slug = getPostSlug(post);
 
@@ -79,6 +80,9 @@ const breadcrumbJsonLd = {
     <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
   </Fragment>
 
+  <!-- Reading progress bar -->
+  <div class="reading-progress" id="readingProgress" aria-hidden="true"></div>
+
   <Nav activePage="blog" />
   <CommandPalette />
 
@@ -89,11 +93,13 @@ const breadcrumbJsonLd = {
 
         {tags.length > 0 && (
           <div class="post-tags">
-            {tags.map((tag) => <span class="post-tag">{tag}</span>)}
+            {tags.map((tag) => (
+              <a href={`/blog/${tag.toLowerCase()}/`} class="post-tag">{tag}</a>
+            ))}
           </div>
         )}
 
-        <h1 class="post-title">{title}</h1>
+        <h1 class="post-title" transition:name={`post-title-${slug}`}>{title}</h1>
 
         {description && <p class="post-description">{description}</p>}
 
@@ -114,7 +120,12 @@ const breadcrumbJsonLd = {
 
       {heroImage && (
         <div style="max-width:760px;margin:0 auto;padding:0 2rem 2rem;">
-          <img src={heroImage} alt={title} style="width:100%;border-radius:12px;" />
+          <img
+            src={heroImage}
+            alt={title}
+            style="width:100%;border-radius:12px;"
+            transition:name={`post-hero-${slug}`}
+          />
         </div>
       )}
 
@@ -122,6 +133,32 @@ const breadcrumbJsonLd = {
         <slot />
       </div>
     </article>
+
+    {relatedPosts.length > 0 && (
+      <section class="related-posts">
+        <div class="related-posts-inner">
+          <p class="section-label">Continue reading</p>
+          <div class="related-posts-grid">
+            {relatedPosts.map((p) => (
+              <a href={`/${getPostSlug(p)}/`} class="related-card" data-tilt>
+                <div class="post-cats">
+                  {p.data.tags.slice(0, 2).map(t => (
+                    <a href={`/blog/${t.toLowerCase()}/`} class="blog-tag">{t}</a>
+                  ))}
+                </div>
+                <h3 class="related-card-title" transition:name={`post-title-${getPostSlug(p)}`}>
+                  {p.data.title}
+                </h3>
+                <p class="related-card-excerpt">
+                  {p.data.excerpt ?? p.data.description ?? ''}
+                </p>
+                <span class="related-card-cta">Read →</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
   </main>
 
   <script>
@@ -129,10 +166,25 @@ const breadcrumbJsonLd = {
     import { initAmbientGlow } from '../scripts/ambient-glow';
     import { initCommandPalette } from '../scripts/command-palette';
     import { initNav } from '../scripts/nav';
+    import { initTilt } from '../scripts/tilt';
 
-    initScrollReveal();
-    initAmbientGlow();
-    initCommandPalette();
-    initNav();
+    document.addEventListener('astro:page-load', () => {
+      initScrollReveal();
+      initAmbientGlow();
+      initCommandPalette();
+      initNav();
+      initTilt();
+
+      // Reading progress bar
+      const bar = document.getElementById('readingProgress');
+      if (bar) {
+        const update = () => {
+          const total = document.body.scrollHeight - window.innerHeight;
+          bar.style.transform = `scaleX(${total > 0 ? Math.min(window.scrollY / total, 1) : 0})`;
+        };
+        window.addEventListener('scroll', update, { passive: true });
+        update();
+      }
+    });
   </script>
 </BaseLayout>

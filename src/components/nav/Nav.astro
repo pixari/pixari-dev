@@ -5,7 +5,7 @@ interface Props {
 const { activePage = 'home' } = Astro.props;
 ---
 
-<header>
+<header transition:persist>
   <nav role="navigation" aria-label="Main navigation">
     <a href="/" class="nav-logo">pixari</a>
     <ul class="nav-links">
