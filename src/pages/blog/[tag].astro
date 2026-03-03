@@ -64,7 +64,7 @@ function formatDateShort(date: Date) {
             {post.data.tags.length > 0 && (
               <div class="post-cats">
                 {post.data.tags.slice(0, 2).map(t => (
-                  <a href={`/blog/${t.toLowerCase()}/`} class="blog-tag">{t}</a>
+                  <span class="blog-tag">{t}</span>
                 ))}
               </div>
             )}

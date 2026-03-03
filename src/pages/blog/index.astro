@@ -56,7 +56,7 @@ function formatDateShort(date: Date) {
             </p>
             <div class="blog-page-featured-footer">
               {featured.data.tags.map(tag => (
-                <a href={`/blog/${tag.toLowerCase()}/`} class="blog-tag">{tag}</a>
+                <span class="blog-tag">{tag}</span>
               ))}
               <span class="blog-read-cta">Read →</span>
             </div>
@@ -78,7 +78,7 @@ function formatDateShort(date: Date) {
             {post.data.tags.length > 0 && (
               <div class="post-cats">
                 {post.data.tags.slice(0, 2).map(tag => (
-                  <a href={`/blog/${tag.toLowerCase()}/`} class="blog-tag">{tag}</a>
+                  <span class="blog-tag">{tag}</span>
                 ))}
               </div>
             )}
