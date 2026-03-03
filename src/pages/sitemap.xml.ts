@@ -17,6 +17,7 @@ export async function GET(context: APIContext) {
     { url: `${site}/`,         lastmod: latestPostDate, priority: '1.0', changefreq: 'weekly' },
     { url: `${site}/blog/`,    lastmod: latestPostDate, priority: '0.9', changefreq: 'daily' },
     { url: `${site}/reading/`, lastmod: '2025-01-01',   priority: '0.5', changefreq: 'monthly' },
+    { url: `${site}/now/`,     lastmod: '2026-03-01',   priority: '0.6', changefreq: 'monthly' },
   ];
 
   const postPages = sorted.map((post) => ({

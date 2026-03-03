@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/nav/Nav.astro';
+import CommandPalette from '../components/nav/CommandPalette.astro';
+import '../styles/blog.css';
+
+const lastUpdated = 'March 2026';
+---
+
+<BaseLayout
+  title="Now | pixari.dev"
+  description="What Raffaele Pizzari is working on, studying, and thinking about right now."
+>
+  <Nav activePage="now" />
+  <CommandPalette />
+
+  <main>
+    <div class="blog-page-header">
+      <p class="section-label">Status</p>
+      <h1 class="blog-page-title"><span class="gradient-text">Now</span></h1>
+      <p class="blog-page-subtitle">
+        What I'm focused on at this moment in time.
+      </p>
+    </div>
+
+    <div class="now-wrap">
+      <p class="now-updated">Last updated: {lastUpdated} · Munich</p>
+
+      <div class="now-section reveal">
+        <p class="now-label">Building</p>
+        <p class="now-text">
+          Autonomous agent systems that actually ship value — not demos, not proofs of concept,
+          but production systems where AI genuinely owns slices of real engineering workflows.
+          The interesting problems aren't the models; they're the boundaries, the fallbacks,
+          and the organizational trust required to let agents act unsupervised.
+        </p>
+      </div>
+
+      <div class="now-section reveal">
+        <p class="now-label">Studying</p>
+        <p class="now-text">
+          AWS DevOps Professional. Deep in infrastructure-as-code, multi-account strategy,
+          and incident response at scale. The exam is a useful mirror — it surfaces the gap
+          between "I understand this conceptually" and "I could architect this under pressure."
+        </p>
+      </div>
+
+      <div class="now-section reveal">
+        <p class="now-label">Thinking about</p>
+        <p class="now-text">
+          Engineering cultures that don't dissolve under AI acceleration. When velocity increases
+          and human review decreases, what holds a team together? I think it's <em>taste</em> —
+          the shared instinct for what's worth building and what isn't. Cultivating that taste
+          in an organization is the most underrated leadership challenge right now.
+        </p>
+      </div>
+
+      <p class="now-footer reveal">
+        This is a <a href="https://nownownow.com/about" target="_blank" rel="noopener noreferrer">/now page</a>.
+        Everyone has one.
+      </p>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  import { initScrollReveal } from '../scripts/scroll-reveal';
+  import { initAmbientGlow } from '../scripts/ambient-glow';
+  import { initCommandPalette } from '../scripts/command-palette';
+  import { initNav } from '../scripts/nav';
+
+  document.addEventListener('astro:page-load', () => {
+    initScrollReveal();
+    initAmbientGlow();
+    initCommandPalette();
+    initNav();
+  });
+</script>
