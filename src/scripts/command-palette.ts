@@ -15,7 +15,6 @@ function scrollTo(id: string) {
   if (el) {
     el.scrollIntoView({ behavior: 'smooth' });
   } else {
-    // If section not on current page, go to homepage first
     window.location.href = `/#${id}`;
   }
 }
@@ -89,6 +88,53 @@ function loadPostGroup(): CmdGroup | null {
   }
 }
 
+// ── Pagefind full-text search ───────────────────────────────────────────────
+
+let pagefindModule: any = null;
+let pagefindState: 'idle' | 'loading' | 'ready' | 'unavailable' = 'idle';
+
+async function loadPagefind() {
+  if (pagefindState === 'ready') return pagefindModule;
+  if (pagefindState === 'loading' || pagefindState === 'unavailable') return null;
+  pagefindState = 'loading';
+  try {
+    // @ts-ignore — generated at build time
+    const pf = await import('/pagefind/pagefind.js');
+    await pf.init();
+    pagefindModule = pf;
+    pagefindState = 'ready';
+  } catch {
+    pagefindState = 'unavailable'; // dev mode or not built yet
+  }
+  return pagefindModule;
+}
+
+async function pagefindSearch(query: string): Promise<CmdGroup | null> {
+  if (!query.trim()) return null;
+  const pf = await loadPagefind();
+  if (!pf) return null;
+  try {
+    const results = await pf.search(query);
+    if (!results?.results?.length) return null;
+    const items: CmdItem[] = [];
+    for (const result of results.results.slice(0, 6)) {
+      const data = await result.data();
+      const excerpt = (data.excerpt ?? '').replace(/<[^>]*>/g, '').trim();
+      items.push({
+        icon: '🔍',
+        label: data.meta?.title ?? 'Post',
+        desc: excerpt,
+        action: () => go(data.url),
+      });
+    }
+    return items.length > 0 ? { group: 'Search results', items } : null;
+  } catch {
+    return null;
+  }
+}
+
+// ── Rendering ───────────────────────────────────────────────────────────────
+
 function showToast(message: string) {
   const toast = document.createElement('div');
   toast.textContent = message;
@@ -109,24 +155,21 @@ function showToast(message: string) {
   }, 2000);
 }
 
-function renderResults(groups: CmdGroup[], query: string) {
+// Registered actions array — built once per init so onclick indices stay stable
+let registeredActions: (() => void)[] = [];
+
+function renderGroups(groups: CmdGroup[]) {
   const container = document.getElementById('cmdResults');
   if (!container) return;
-  const q = query.toLowerCase().trim();
+  registeredActions = [];
   let html = '';
-
   for (const group of groups) {
-    const filtered = group.items.filter(
-      (item) =>
-        item.label.toLowerCase().includes(q) ||
-        item.desc.toLowerCase().includes(q)
-    );
-    if (filtered.length === 0) continue;
+    if (group.items.length === 0) continue;
     html += `<div class="cmd-group-label">${group.group}</div>`;
-    for (const item of filtered) {
-      const gIdx = groups.indexOf(group);
-      const iIdx = group.items.indexOf(item);
-      html += `<div class="cmd-item" onclick="window.__execCmd(${gIdx},${iIdx})">
+    for (const item of group.items) {
+      const idx = registeredActions.length;
+      registeredActions.push(item.action);
+      html += `<div class="cmd-item" onclick="window.__execCmd(${idx})">
         <div class="cmd-item-icon">${item.icon}</div>
         <div class="cmd-item-text">
           <strong>${item.label}</strong>
@@ -135,19 +178,33 @@ function renderResults(groups: CmdGroup[], query: string) {
       </div>`;
     }
   }
-
   if (!html) {
     html = '<div style="padding:1.5rem;text-align:center;color:var(--text-secondary);font-size:0.85rem;">No results found</div>';
   }
-
   container.innerHTML = html;
 }
+
+function filterGroups(groups: CmdGroup[], query: string): CmdGroup[] {
+  const q = query.toLowerCase().trim();
+  if (!q) return groups;
+  return groups
+    .map((g) => ({
+      ...g,
+      items: g.items.filter(
+        (item) =>
+          item.label.toLowerCase().includes(q) ||
+          item.desc.toLowerCase().includes(q),
+      ),
+    }))
+    .filter((g) => g.items.length > 0);
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
 
 export function initCommandPalette() {
   const overlay = document.getElementById('cmdPalette');
   const input = document.getElementById('cmdInput') as HTMLInputElement | null;
 
-  // Merge static groups + blog posts
   const postGroup = loadPostGroup();
   const allGroups: CmdGroup[] = postGroup
     ? [...staticGroups, postGroup]
@@ -160,7 +217,9 @@ export function initCommandPalette() {
       input.value = '';
       input.focus();
     }
-    renderResults(allGroups, '');
+    renderGroups(allGroups);
+    // Pre-load pagefind in the background
+    loadPagefind();
   }
 
   function close_() {
@@ -169,13 +228,33 @@ export function initCommandPalette() {
 
   (window as any).openCmdPalette = open_;
   (window as any).closeCmdPalette = close_;
-  (window as any).__execCmd = (gIdx: number, iIdx: number) => {
-    const item = allGroups[gIdx]?.items[iIdx];
-    if (item) { close_(); item.action(); }
+  (window as any).__execCmd = (idx: number) => {
+    const action = registeredActions[idx];
+    if (action) { close_(); action(); }
   };
 
+  // Input: immediate static filter + debounced Pagefind
+  let searchTimer = 0;
+
   input?.addEventListener('input', (e) => {
-    renderResults(allGroups, (e.target as HTMLInputElement).value);
+    const q = (e.target as HTMLInputElement).value;
+    clearTimeout(searchTimer);
+
+    if (!q.trim()) {
+      renderGroups(allGroups);
+      return;
+    }
+
+    // Immediate: show static results filtered
+    renderGroups(filterGroups(allGroups, q));
+
+    // Debounced: replace blog posts group with Pagefind full-text results
+    searchTimer = window.setTimeout(async () => {
+      const pfGroup = await pagefindSearch(q);
+      if (!pfGroup) return; // no results or unavailable — keep static filter
+      const staticFiltered = filterGroups(staticGroups, q);
+      renderGroups([...staticFiltered, pfGroup]);
+    }, 220);
   });
 
   document.addEventListener('keydown', (e) => {

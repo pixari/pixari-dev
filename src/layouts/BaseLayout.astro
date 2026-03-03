@@ -131,11 +131,11 @@ const hasLargeImage = !!ogImage; // only use summary_large_image for posts with 
   </head>
 
   <body>
-    <div class="ambient-glow" id="glow"></div>
+    <div class="ambient-glow" id="glow" data-pagefind-ignore></div>
 
     <slot />
 
-    <footer>
+    <footer data-pagefind-ignore>
       <p>© {new Date().getFullYear()} Raffaele Pizzari</p>
       <div class="footer-links">
         <button class="footer-print-btn" onclick="window.print()" aria-label="Download CV as PDF">

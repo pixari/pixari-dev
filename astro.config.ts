@@ -7,6 +7,13 @@ export default defineConfig({
   trailingSlash: 'always',
   output: 'static',
   adapter: vercel(),
+  vite: {
+    build: {
+      rollupOptions: {
+        external: ['/pagefind/pagefind.js'],
+      },
+    },
+  },
   integrations: [
     mdx(),
   ],

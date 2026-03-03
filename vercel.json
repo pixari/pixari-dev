@@ -1,4 +1,5 @@
 {
+  "buildCommand": "npm run build && pagefind --site .vercel/output/static",
   "redirects": [
     { "source": "/feed/", "destination": "/rss.xml", "permanent": true },
     { "source": "/feed",  "destination": "/rss.xml", "permanent": true }

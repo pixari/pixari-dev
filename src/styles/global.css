@@ -845,12 +845,38 @@ section {
   color: inherit;
   display: flex;
   flex-direction: column;
+  position: relative;
+}
+
+.blog-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 17px;
+  background: conic-gradient(
+    from var(--border-angle),
+    transparent 20%,
+    var(--gradient-1) 45%,
+    var(--gradient-2) 62%,
+    var(--gradient-3) 78%,
+    transparent 95%
+  );
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  animation: border-rotate 3s linear infinite;
+  animation-play-state: paused;
 }
 
 .blog-card:hover {
-  border-color: rgba(126, 184, 255, 0.2);
+  border-color: transparent;
   transform: translateY(-4px);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.blog-card:hover::before {
+  opacity: 1;
+  animation-play-state: running;
 }
 
 
@@ -1448,6 +1474,17 @@ footer {
   .game-touch-controls.active { display: flex; }
 }
 
+/* ── Animated gradient border (CSS Houdini @property) ── */
+@property --border-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes border-rotate {
+  to { --border-angle: 360deg; }
+}
+
 /* ── View Transitions ── */
 @keyframes vt-out {
   to { opacity: 0; transform: translateX(-16px); }
@@ -1506,6 +1543,8 @@ footer {
 
   .gradient-text { animation: none !important; }
   .hero-badge .dot { animation: none !important; }
+  .blog-card::before,
+  .related-card::before { display: none !important; }
   .ambient-glow { display: none !important; }
   [data-tilt] { transform: none !important; }
 }
