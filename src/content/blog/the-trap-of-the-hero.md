@@ -2,6 +2,7 @@
 title: "The Trap of the Hero"
 pubDate: "2025-11-26"
 tags: ["Leadership"]
+excerpt: "Being the person who saves the day feels like respect—but it's often a trap. Why the hero role becomes a bottleneck and how to let go."
 ---
 
 I remember the exact moment I felt most valuable in my career. It wasn't when I got a promotion, and it wasn't when I saw the exit money.

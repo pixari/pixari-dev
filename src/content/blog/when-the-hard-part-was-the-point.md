@@ -2,6 +2,7 @@
 title: "When the hard part was the point"
 pubDate: "2025-11-24"
 tags: ["Personal", "Engineering"]
+excerpt: "Solving a problem in seconds with AI left me feeling robbed—of the struggle, the flow, and the identity built around enduring the friction."
 ---
 
 I still remember the weight of the book.

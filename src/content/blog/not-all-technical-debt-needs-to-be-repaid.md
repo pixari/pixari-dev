@@ -2,6 +2,7 @@
 title: "Not All Technical Debt Needs to Be Repaid"
 pubDate: "2025-07-11"
 tags: ["Engineering"]
+excerpt: "Treating every tech debt as urgent leads to paralysis. Use the interest-rate test to pay down what hurts and leave the rest documented."
 ---
 
 **Unpopular opinion:** Not all technical debt needs to be repaid.

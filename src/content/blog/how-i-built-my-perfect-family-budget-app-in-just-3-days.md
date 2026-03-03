@@ -2,6 +2,7 @@
 title: "How I Built My Perfect Family Budget App in Just 3 Days"
 pubDate: "2026-01-20"
 tags: ["Engineering", "Personal"]
+excerpt: "Frustrated by budget apps that couldn't tell me where my money went, I built my own with Next.js and automation—and got real visibility in days."
 ---
 
 **I was paying €19/month for a pretty pie chart that couldn't tell me what I bought. So I rage-coded a solution using Next.js, AI, and Puppeteer.**

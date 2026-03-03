@@ -2,6 +2,7 @@
 title: "Focusing on the 'Why', Not Just the 'How'"
 pubDate: "2025-05-03"
 tags: ["Leadership", "Engineering"]
+excerpt: "Avoid cargo-cult Agile by keeping teams focused on the spirit of agility—adaptability, value, and improvement—instead of rigidly executing the how."
 ---
 
 Many of us in engineering leadership have guided teams through the adoption of **Agile frameworks** like **Scrum** or **Kanban**.

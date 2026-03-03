@@ -2,6 +2,7 @@
 title: "Build for Today or Don't Build at All"
 pubDate: "2025-11-27"
 tags: ["Engineering"]
+excerpt: "Future-proof architecture often hides fear of shipping. Why building for today beats hedging with abstraction—and how to ship without the vanity."
 ---
 
 Show me a "future-proof" architecture, and I'll show you a team that's too scared to ship.

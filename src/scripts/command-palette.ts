@@ -31,6 +31,7 @@ const staticGroups: CmdGroup[] = [
       { icon: '🧭', label: 'Values',        desc: 'Principles I lead by',                action: () => scrollTo('values') },
       { icon: '💼', label: 'Experience',    desc: "Where I've made an impact",           action: () => scrollTo('experience') },
       { icon: '🔨', label: 'Fun Projects',  desc: "Things I build for the love of it",  action: () => scrollTo('projects') },
+      { icon: '📖', label: 'Sources',      desc: 'Podcasts, books & blogs I recommend',  action: () => go('/sources/') },
       { icon: '🎮', label: 'Career Climber',desc: 'Play the platformer game',            action: () => scrollTo('game') },
       { icon: '📝', label: 'Blog',          desc: 'All writing',                         action: () => go('/blog/') },
       { icon: '📚', label: 'Publications',  desc: 'Academic work & research',            action: () => scrollTo('publications') },
@@ -98,8 +99,8 @@ async function loadPagefind() {
   if (pagefindState === 'loading' || pagefindState === 'unavailable') return null;
   pagefindState = 'loading';
   try {
-    // @ts-ignore — generated at build time
-    const pf = await import('/pagefind/pagefind.js');
+    // Use new Function to prevent Vite from analyzing this import at dev time
+    const pf = await (new Function('url', 'return import(url)'))('/pagefind/pagefind.js');
     await pf.init();
     pagefindModule = pf;
     pagefindState = 'ready';

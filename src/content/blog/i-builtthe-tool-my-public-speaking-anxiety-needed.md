@@ -2,6 +2,7 @@
 title: "I built the tool my public-speaking anxiety needed"
 pubDate: "2026-02-01"
 tags: ["Engineering", "Personal"]
+excerpt: "A zero-friction teleprompter for talks and Zoom: no signup, no backend, with a compact mode that keeps you looking at the camera instead of the script."
 ---
 
 ![](/images/blog/presentation-mode.png)

@@ -2,6 +2,7 @@
 title: "Betting on Engineering, Not Trends"
 pubDate: "2025-11-19"
 tags: ["Engineering", "AI"]
+excerpt: "The AI hype will fade but the tech won't. How to prepare your engineering practices and codebase for what comes next—without buying the noise."
 ---
 
 Look, I get it. You’re tired of the noise. I am too.

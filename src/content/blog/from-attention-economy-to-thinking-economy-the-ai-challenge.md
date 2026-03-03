@@ -2,6 +2,7 @@
 title: "From Attention Economy to Thinking Economy: The AI Challenge"
 pubDate: "2025-05-16"
 tags: ["AI"]
+excerpt: "As AI automates more tasks, the challenge isn't just jobs—it's protecting and developing our capacity for deep thinking and creativity."
 ---
 
 Imagine a world where your most complex analytical tasks are handled with effortless precision. That future is arriving, but are we prepared for the cognitive shift it demands?

@@ -127,8 +127,8 @@ body::after {
   will-change: transform;
 }
 
-/* ── Navigation ── */
-nav {
+/* ── Navigation (only the main header nav is fixed; e.g. blog pagination stays in flow) ── */
+header > nav {
   position: fixed;
   top: 0;
   left: 0;
@@ -152,7 +152,7 @@ nav {
 }
 
 /* frosted glass kicks in once user scrolls */
-nav.scrolled {
+header > nav.scrolled {
   backdrop-filter: blur(20px) saturate(1.4);
   -webkit-backdrop-filter: blur(20px) saturate(1.4);
   background: rgba(10, 10, 12, 0.75);
@@ -371,6 +371,11 @@ nav.scrolled {
   background: var(--surface);
 }
 
+
+/* ── Main: clear fixed nav ── */
+main {
+  padding-top: 5.5rem;
+}
 
 /* ── Section layout ── */
 section {
@@ -700,6 +705,178 @@ section {
 
 .project-link:hover .arrow {
   transform: translateX(3px);
+}
+
+/* ── Sources / Recommendations Section ── */
+.sources-intro {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  font-weight: 300;
+  line-height: 1.7;
+  max-width: 560px;
+  margin-bottom: 2.5rem;
+}
+
+.sources-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.source-card {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.75rem;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.4s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.source-card:hover {
+  border-color: rgba(126, 184, 255, 0.2);
+  transform: translateY(-4px);
+}
+
+.source-card-image-wrap {
+  flex-shrink: 0;
+  width: 100px;
+  height: 100px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--surface-hover);
+}
+
+.source-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.source-card-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.25rem;
+  opacity: 0.9;
+}
+
+.source-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.source-type {
+  display: inline-block;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+
+.source-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.35rem;
+  font-weight: 400;
+  margin-bottom: 0.25rem;
+  line-height: 1.3;
+}
+
+.source-author {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.6rem;
+}
+
+.source-reason {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-weight: 300;
+  margin-bottom: 0.75rem;
+}
+
+.source-link {
+  font-size: 0.8rem;
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: gap 0.3s ease;
+}
+
+.source-card:hover .source-link {
+  gap: 0.5rem;
+}
+
+.source-link .arrow {
+  transition: transform 0.3s ease;
+}
+
+.source-card:hover .source-link .arrow {
+  transform: translateX(3px);
+}
+
+/* ── Sources page (standalone) ── */
+.sources-page {
+  min-height: 100vh;
+}
+
+.sources-page-header {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 9rem 2rem 3rem;
+}
+
+.sources-page-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin-bottom: 1rem;
+}
+
+.sources-page-intro {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  font-weight: 300;
+  line-height: 1.7;
+  max-width: 560px;
+}
+
+.sources-categories {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2rem 5rem;
+}
+
+.sources-category {
+  padding: 3rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.sources-category:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+.sources-category-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 400;
+  margin-bottom: 1.5rem;
+  color: var(--text);
 }
 
 /* ── Game Section ── */
@@ -1182,27 +1359,6 @@ footer {
   color: var(--accent);
 }
 
-.footer-print-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
-  font-size: 0.72rem;
-  font-family: 'DM Sans', sans-serif;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 0.35rem 0.75rem;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: color 0.2s ease, border-color 0.2s ease;
-}
-
-.footer-print-btn:hover {
-  color: var(--accent);
-  border-color: rgba(126, 184, 255, 0.35);
-}
 
 
 /* ── Command palette ── */
@@ -1417,6 +1573,7 @@ footer {
 @media (max-width: 900px) {
   .skills-grid       { grid-template-columns: 1fr 1fr; }
   .projects-grid     { grid-template-columns: 1fr; }
+  .sources-grid      { grid-template-columns: 1fr; }
   .values-grid       { grid-template-columns: 1fr 1fr; }
   .education-grid    { grid-template-columns: 1fr; gap: 3rem; }
   .testimonials-grid { grid-template-columns: 1fr; }
@@ -1429,7 +1586,7 @@ footer {
 
   .exp-tags { margin-top: 0.75rem; }
 
-  nav {
+  header > nav {
     padding: 1rem 1.5rem;
   }
 
@@ -1461,6 +1618,10 @@ footer {
   .nav-links { display: none; }
 
   .section-container { padding: 5rem 1.5rem; }
+
+  .sources-page-header { padding: 8rem 1.5rem 2rem; }
+  .sources-categories   { padding-left: 1.5rem; padding-right: 1.5rem; padding-bottom: 3rem; }
+  .sources-category    { padding: 2rem 0; }
 
   .hero {
     padding: 7rem 1.5rem 4rem;
@@ -1567,7 +1728,7 @@ footer {
     display: none !important;
   }
 
-  nav {
+  header > nav {
     position: static !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
@@ -1613,7 +1774,7 @@ footer {
   }
 
   .skill-card, .value-card, .education-item,
-  .credential-item, .publication-item {
+  .credential-item, .publication-item, .source-card {
     break-inside: avoid;
     border: 1px solid #ddd !important;
   }

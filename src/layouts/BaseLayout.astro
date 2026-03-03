@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
 import { ViewTransitions } from 'astro:transitions';
+import dmSansUrl from '@fontsource/dm-sans/files/dm-sans-latin-400-normal.woff2?url';
+import instrumentSerifUrl from '@fontsource/instrument-serif/files/instrument-serif-latin-400-normal.woff2?url';
 
 interface Props {
   title: string;
@@ -109,6 +111,10 @@ const hasLargeImage = !!ogImage; // only use summary_large_image for posts with 
     <!-- Preconnect: analytics -->
     <link rel="preconnect" href="https://analytics.pixari.dev" />
 
+    <!-- Preload critical fonts -->
+    <link rel="preload" href={dmSansUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={instrumentSerifUrl} as="font" type="font/woff2" crossorigin />
+
     <!-- Fonts: self-hosted via @fontsource (imported in frontmatter) -->
 
     <!-- Analytics (loaded after main thread is idle) -->
@@ -138,10 +144,6 @@ const hasLargeImage = !!ogImage; // only use summary_large_image for posts with 
     <footer data-pagefind-ignore>
       <p>© {new Date().getFullYear()} Raffaele Pizzari</p>
       <div class="footer-links">
-        <button class="footer-print-btn" onclick="window.print()" aria-label="Download CV as PDF">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/></svg>
-          Download CV
-        </button>
         <a href="mailto:raffaele.pizzari@gmail.com" aria-label="Email">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
         </a>

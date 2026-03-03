@@ -14,13 +14,15 @@ const formattedDate = post.data.pubDate.toLocaleDateString('en-US', {
   month: 'short',
   day: 'numeric',
 });
+
+const readingMinutes = Math.max(1, Math.round((post.body ?? '').trim().split(/\s+/).length / 200));
 ---
 
 <a
   href={`/${getPostSlug(post)}/`}
   class={`blog-card reveal${index > 0 ? ` reveal-delay-${Math.min(index, 3)}` : ''}`}
 >
-  <span class="blog-date">{formattedDate}</span>
+  <span class="blog-date">{formattedDate} · {readingMinutes} min read</span>
   <h3>{post.data.title}</h3>
   <p>{post.data.excerpt ?? post.data.description ?? ''}</p>
   {post.data.tags.length > 0 && (

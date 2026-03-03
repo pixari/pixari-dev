@@ -1,0 +1,110 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Nav from '../../../components/nav/Nav.astro';
+import CommandPalette from '../../../components/nav/CommandPalette.astro';
+import { getPostSlug } from '../../../utils/posts';
+import { getBlogPagination, BLOG_PAGE_BASE } from '../../../utils/blog-pagination';
+import '../../../styles/blog.css';
+import { getCollection } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+  const sorted = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+  const { totalPages } = getBlogPagination(sorted);
+  const paths = [];
+  for (let page = 2; page <= totalPages; page++) {
+    paths.push({ params: { page: String(page) }, props: { page } });
+  }
+  return paths;
+};
+
+const { page: currentPage } = Astro.props;
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const sorted = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const { totalPages, getPostsForPage } = getBlogPagination(sorted);
+const postsToShow = getPostsForPage(currentPage);
+
+function formatDateShort(date: Date) {
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+function readingTime(post: (typeof sorted)[0]) {
+  return Math.max(1, Math.round((post.body ?? '').trim().split(/\s+/).length / 200));
+}
+---
+
+<BaseLayout
+  title={`Blog — Page ${currentPage} | pixari.dev`}
+  description="Writing about engineering, AI, leadership, and building digital products."
+>
+  <Nav activePage="blog" />
+  <CommandPalette />
+
+  <main>
+    <div class="blog-page-header">
+      <p class="section-label">Writing</p>
+      <h1 class="blog-page-title">pixari.<span class="gradient-text">blog</span></h1>
+      <p class="blog-page-subtitle">
+        Notes on engineering, AI, leadership, and building things that matter.
+      </p>
+    </div>
+
+    <div class="blog-page-list-wrap">
+      {postsToShow.map((post) => {
+        const excerpt = post.data.excerpt ?? post.data.description ?? '';
+        return (
+          <a href={`/${getPostSlug(post)}/`} class="blog-page-item">
+            <div class="blog-page-item-meta">
+              <time datetime={post.data.pubDate.toISOString()}>
+                {formatDateShort(post.data.pubDate)}
+              </time>
+              <span class="blog-reading-time">{readingTime(post)} min read</span>
+              {post.data.tags.length > 0 && (
+                <div class="post-cats">
+                  {post.data.tags.slice(0, 2).map((tag) => (
+                    <span class="blog-tag">{tag}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div class="blog-page-item-body">
+              <h3 class="blog-page-item-title">{post.data.title}</h3>
+              {excerpt && <p class="blog-page-item-excerpt">{excerpt}</p>}
+            </div>
+            <span class="blog-page-item-arrow">→</span>
+          </a>
+        );
+      })}
+    </div>
+
+    <nav class="blog-pagination" aria-label="Blog pagination">
+      {currentPage > 2 ? (
+        <a href={`${BLOG_PAGE_BASE}/${currentPage - 1}/`} class="blog-pagination-prev">← Newer posts</a>
+      ) : (
+        <a href="/blog/" class="blog-pagination-prev">← Newer posts</a>
+      )}
+      <span class="blog-pagination-label">Page {currentPage} of {totalPages}</span>
+      {currentPage < totalPages ? (
+        <a href={`${BLOG_PAGE_BASE}/${currentPage + 1}/`} class="blog-pagination-next">Older posts →</a>
+      ) : (
+        <span class="blog-pagination-next blog-pagination-disabled">Older posts →</span>
+      )}
+    </nav>
+  </main>
+</BaseLayout>
+
+<script>
+  import { initScrollReveal } from '../../../scripts/scroll-reveal';
+  import { initAmbientGlow } from '../../../scripts/ambient-glow';
+  import { initCommandPalette } from '../../../scripts/command-palette';
+  import { initNav } from '../../../scripts/nav';
+
+  document.addEventListener('astro:page-load', () => {
+    initScrollReveal();
+    initAmbientGlow();
+    initCommandPalette();
+    initNav();
+  });
+</script>

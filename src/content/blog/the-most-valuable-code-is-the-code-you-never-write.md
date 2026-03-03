@@ -2,6 +2,7 @@
 title: "The Most Valuable Code Is the Code You Never Write"
 pubDate: "2025-06-11"
 tags: ["Engineering"]
+excerpt: "YAGNI in practice: the best code is often the code you don't write. How to resist future-proofing and ship simple, adaptable solutions."
 ---
 
 The most valuable code is often the code you never write.

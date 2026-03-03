@@ -2,6 +2,7 @@
 title: "The Year I Stopped Apologizing for the Chaos"
 pubDate: "2025-12-19"
 tags: ["Personal", "Leadership"]
+excerpt: "Parenting young kids while leading a team: on guilt, the myth of balance, and finally refusing to apologize for being human."
 ---
 
 Let’s look at the data, because that’s usually where I feel safe.

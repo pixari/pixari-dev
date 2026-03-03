@@ -1,0 +1,364 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/nav/Nav.astro';
+import CommandPalette from '../../components/nav/CommandPalette.astro';
+import '../../styles/blog.css';
+
+type SourceType = 'book' | 'podcast' | 'blog';
+
+interface Source {
+  type: SourceType;
+  title: string;
+  author?: string;
+  reason: string;
+  url: string;
+  image: string | null;
+}
+
+interface Category {
+  id: string;
+  title: string;
+  sources: Source[];
+}
+
+const categories: Category[] = [
+  {
+    id: 'engineering-management',
+    title: 'Engineering management',
+    sources: [
+      {
+        type: 'book',
+        title: "The Manager's Path",
+        author: 'Camille Fournier',
+        reason: 'The clearest map from IC to manager to senior leadership. Practical, no fluff—exactly what I wish I had when I made the jump.',
+        url: 'https://www.oreilly.com/library/view/the-managers-path/9781491973882/',
+        image: 'https://covers.openlibrary.org/b/isbn/9781491973898-M.jpg',
+      },
+      {
+        type: 'book',
+        title: 'An Elegant Puzzle',
+        author: 'Will Larson',
+        reason: 'Systems of engineering organizations: teams, tooling, and strategy. Dense with frameworks you can use Monday morning.',
+        url: 'https://lethain.com/elegant-puzzle/',
+        image: 'https://covers.openlibrary.org/b/isbn/9781732263817-M.jpg',
+      },
+      {
+        type: 'podcast',
+        title: 'The Pragmatic Engineer',
+        author: 'Gergely Orosz',
+        reason: 'Engineering culture, leveling, and how big tech actually works. One of the few podcasts that goes deep without the hype.',
+        url: 'https://newsletter.pragmaticengineer.com/podcast',
+        image: null,
+      },
+      {
+        type: 'blog',
+        title: 'Pragmatic Engineer Blog',
+        author: 'Gergely Orosz',
+        reason: 'Deep dives on compensation, leveling, and engineering org design. Data and nuance instead of generic advice.',
+        url: 'https://blog.pragmaticengineer.com/',
+        image: null,
+      },
+      {
+        type: 'book',
+        title: 'Radical Candor',
+        author: 'Kim Scott',
+        reason: 'How to care personally and challenge directly. The framework I use for feedback and 1:1s—clear and actionable.',
+        url: 'https://www.radicalcandor.com/the-book/',
+        image: 'https://covers.openlibrary.org/b/isbn/9781250103505-M.jpg',
+      },
+      {
+        type: 'blog',
+        title: 'Lara Hogan',
+        author: 'Lara Hogan',
+        reason: 'Resilient management, inclusive hiring, and sustainable teams. Short, practical posts you can apply immediately.',
+        url: 'https://larahogan.me/blog/',
+        image: null,
+      },
+      {
+        type: 'podcast',
+        title: 'Engineering Leadership',
+        author: 'Tech Lead Academy',
+        reason: 'Conversations with eng leaders on scaling teams, communication, and the transition from coding to leading.',
+        url: 'https://podcasts.apple.com/us/podcast/engineering-leadership-podcast/id1569164071',
+        image: null,
+      },
+    ],
+  },
+  {
+    id: 'it-leadership',
+    title: 'IT leadership',
+    sources: [
+      {
+        type: 'book',
+        title: 'The Staff Engineer\'s Path',
+        author: 'Tanya Reilly',
+        reason: 'How to have impact as a senior IC: scope, influence, and navigating the organization. Essential for tech leads and staff+.',
+        url: 'https://www.oreilly.com/library/view/the-staff-engineers/9781098118723/',
+        image: 'https://covers.openlibrary.org/b/isbn/9781098118723-M.jpg',
+      },
+      {
+        type: 'blog',
+        title: 'Rands in Repose',
+        author: 'Michael Lopp',
+        reason: 'Long-form essays on leading engineering teams, hiring, and the craft of management. Thoughtful and rereadable.',
+        url: 'https://randsinrepose.com/',
+        image: null,
+      },
+      {
+        type: 'podcast',
+        title: 'Software Engineering Daily',
+        author: 'Jeff Meyerson',
+        reason: 'Interviews with practitioners building real systems. Great for staying current on infra, databases, and platform engineering.',
+        url: 'https://softwareengineeringdaily.com/',
+        image: null,
+      },
+      {
+        type: 'book',
+        title: 'The Phoenix Project',
+        author: 'Gene Kim et al.',
+        reason: 'A novel about IT, DevOps, and fixing a broken org. Makes the case for flow, feedback, and continuous learning.',
+        url: 'https://itrevolution.com/product/the-phoenix-project/',
+        image: 'https://covers.openlibrary.org/b/isbn/9780988262591-M.jpg',
+      },
+      {
+        type: 'blog',
+        title: 'Charity.wtf',
+        author: 'Charity Majors',
+        reason: 'Observability, on-call, and engineering culture from someone who built and scaled infrastructure teams.',
+        url: 'https://charity.wtf/',
+        image: null,
+      },
+      {
+        type: 'podcast',
+        title: 'CoRecursive',
+        author: 'Adam Gordon Bell',
+        reason: 'Deep technical interviews with engineers and creators. Stories behind the systems and the people who build them.',
+        url: 'https://corecursive.com/',
+        image: null,
+      },
+    ],
+  },
+  {
+    id: 'development',
+    title: 'Development (TypeScript, Node)',
+    sources: [
+      {
+        type: 'blog',
+        title: 'Total TypeScript',
+        author: 'Matt Pocock',
+        reason: 'TypeScript tips, patterns, and advanced types. Makes the type system click without the overwhelm.',
+        url: 'https://www.totaltypescript.com/',
+        image: null,
+      },
+      {
+        type: 'blog',
+        title: 'Node.js Best Practices',
+        author: 'Liran Tal & contributors',
+        reason: 'Curated list of Node.js security, structure, and performance practices. Practical and up to date.',
+        url: 'https://github.com/goldbergyoni/nodebestpractices',
+        image: null,
+      },
+      {
+        type: 'blog',
+        title: 'TypeScript Handbook',
+        author: 'Microsoft',
+        reason: 'The official TS docs. Still the best reference for understanding the language and compiler options.',
+        url: 'https://www.typescriptlang.org/docs/handbook/intro.html',
+        image: null,
+      },
+      {
+        type: 'book',
+        title: 'Effective TypeScript',
+        author: 'Dan Vanderkam',
+        reason: '62 specific ways to improve your TypeScript. Bite-sized items that level up your types and tooling.',
+        url: 'https://effectivetypescript.com/',
+        image: 'https://covers.openlibrary.org/b/isbn/9781492053745-M.jpg',
+      },
+      {
+        type: 'blog',
+        title: 'Kent C. Dodds',
+        author: 'Kent C. Dodds',
+        reason: 'Testing, React, and JavaScript practices. Clear tutorials and a testing-focused mindset that scales.',
+        url: 'https://kentcdodds.com/blog',
+        image: null,
+      },
+      {
+        type: 'blog',
+        title: 'Node.js Documentation',
+        author: 'OpenJS Foundation',
+        reason: 'Official Node docs: APIs, guides, and best practices. The first place to check for runtime and module behavior.',
+        url: 'https://nodejs.org/docs/latest/api/',
+        image: null,
+      },
+    ],
+  },
+  {
+    id: 'ethics',
+    title: 'Ethics in software development',
+    sources: [
+      {
+        type: 'book',
+        title: 'Weapons of Math Destruction',
+        author: 'Cathy O\'Neil',
+        reason: 'How algorithms can encode bias and harm at scale. Required reading for anyone building systems that affect people.',
+        url: 'https://www.penguinrandomhouse.com/books/241363/weapons-of-math-destruction-by-cathy-oneil/',
+        image: 'https://covers.openlibrary.org/b/isbn/9780553418811-M.jpg',
+      },
+      {
+        type: 'blog',
+        title: 'Responsible Tech Guide',
+        author: 'All Tech Is Human',
+        reason: 'Resources and frameworks for building technology that considers societal impact and responsibility.',
+        url: 'https://www.alltechishuman.org/',
+        image: null,
+      },
+      {
+        type: 'book',
+        title: 'Technically Wrong',
+        author: 'Sara Wachter-Boettcher',
+        reason: 'How tech products perpetuate bias and exclude users. Sharp and necessary for anyone designing or building software.',
+        url: 'https://www.sarawb.com/technically-wrong',
+        image: 'https://covers.openlibrary.org/b/isbn/9780393254507-M.jpg',
+      },
+      {
+        type: 'blog',
+        title: 'Design for Real Life',
+        author: 'Eric Meyer & Sara Wachter-Boettcher',
+        reason: 'Designing for stress, crisis, and exclusion. Short book that reframes how we think about edge cases and users.',
+        url: 'https://abookapart.com/products/design-for-real-life',
+        image: null,
+      },
+      {
+        type: 'blog',
+        title: 'Ethics in Tech',
+        author: 'Various',
+        reason: 'Curated reading list on ethics, privacy, and accountability in technology. Good starting point for going deeper.',
+        url: 'https://github.com/numfocus/ethics-in-tech',
+        image: null,
+      },
+    ],
+  },
+  {
+    id: 'ai-development',
+    title: 'AI and development',
+    sources: [
+      {
+        type: 'blog',
+        title: 'Simon Willison’s Weblog',
+        author: 'Simon Willison',
+        reason: 'Practical experiments with LLMs, AI tooling, and how to integrate them into real products. No hype, lots of code.',
+        url: 'https://simonwillison.net/',
+        image: null,
+      },
+      {
+        type: 'blog',
+        title: 'AI Engineering',
+        author: 'Swizec Toler',
+        reason: 'Newsletter and posts on AI-assisted development, prompt engineering, and shipping with LLMs.',
+        url: 'https://www.aieng.news/',
+        image: null,
+      },
+      {
+        type: 'blog',
+        title: 'Andrej Karpathy',
+        author: 'Andrej Karpathy',
+        reason: 'Deep learning, LLMs, and AI from one of the field’s clearest teachers. Long-form posts that explain the fundamentals.',
+        url: 'https://karpathy.github.io/',
+        image: null,
+      },
+      {
+        type: 'blog',
+        title: 'Latent Space',
+        author: 'Alessio & Shawn',
+        reason: 'Newsletter and podcast on AI eng and tooling. Practical coverage of models, agents, and the dev stack.',
+        url: 'https://www.latent.space/',
+        image: null,
+      },
+      {
+        type: 'blog',
+        title: 'Eugene Yan',
+        author: 'Eugene Yan',
+        reason: 'ML systems in production, recommendations, and building data products. Applied and readable.',
+        url: 'https://eugeneyan.com/writing/',
+        image: null,
+      },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Sources I recommend | pixari.dev"
+  description="Curated podcasts, books, and blogs on engineering management, IT leadership, TypeScript & Node, ethics in software, and AI in development."
+>
+  <Nav activePage="sources" />
+  <CommandPalette />
+
+  <main class="sources-page">
+    <div class="sources-page-header">
+      <p class="section-label">Recommendations</p>
+      <h1 class="sources-page-title">Sources I <span class="gradient-text">recommend</span></h1>
+      <p class="sources-page-intro">
+        Podcasts, books, and blogs that shaped how I lead, build, and think about engineering—grouped by topic.
+      </p>
+    </div>
+
+    <div class="sources-categories">
+      {categories.map((category) => (
+        <section class="sources-category reveal" id={category.id}>
+          <h2 class="sources-category-title">{category.title}</h2>
+          <div class="sources-grid">
+            {category.sources.map((source, i) => (
+              <a
+                href={source.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class={`source-card reveal ${i % 2 === 1 ? 'reveal-delay-1' : ''}`}
+              >
+                <div class="source-card-image-wrap">
+                  {source.image ? (
+                    <img
+                      src={source.image}
+                      alt=""
+                      class="source-card-image"
+                      loading="lazy"
+                      width="120"
+                      height="120"
+                    />
+                  ) : (
+                    <div class="source-card-placeholder" aria-hidden="true">
+                      {source.type === 'book' ? '📖' : source.type === 'podcast' ? '🎧' : '✎'}
+                    </div>
+                  )}
+                </div>
+                <div class="source-card-body">
+                  <span class="source-type">{source.type}</span>
+                  <h3 class="source-title">{source.title}</h3>
+                  {source.author && <span class="source-author">{source.author}</span>}
+                  <p class="source-reason">{source.reason}</p>
+                  <span class="source-link">
+                    Visit <span class="arrow">→</span>
+                  </span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  import { initScrollReveal } from '../../scripts/scroll-reveal';
+  import { initAmbientGlow } from '../../scripts/ambient-glow';
+  import { initCommandPalette } from '../../scripts/command-palette';
+  import { initNav } from '../../scripts/nav';
+
+  document.addEventListener('astro:page-load', () => {
+    initScrollReveal();
+    initAmbientGlow();
+    initCommandPalette();
+    initNav();
+  });
+</script>

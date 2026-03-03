@@ -1,0 +1,27 @@
+---
+import { Picture } from 'astro:assets';
+import authorPhoto from '../../assets/raffaele-pizzari.jpg';
+---
+
+<aside class="author-card">
+  <Picture
+    src={authorPhoto}
+    alt="Raffaele Pizzari"
+    width={64}
+    height={64}
+    formats={['avif', 'webp']}
+    class="author-avatar"
+  />
+  <div class="author-info">
+    <p class="author-name">Raffaele Pizzari</p>
+    <p class="author-role">Senior Engineering Manager · Munich</p>
+    <p class="author-bio">
+      20+ years building digital products and engineering teams. Writing about leadership, AI, and the craft of software.
+    </p>
+    <div class="author-links">
+      <a href="https://twitter.com/pixari" target="_blank" rel="noopener noreferrer">X / Twitter</a>
+      <a href="https://www.linkedin.com/in/raffaelepizzari" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      <a href="https://github.com/pixari" target="_blank" rel="noopener noreferrer">GitHub</a>
+    </div>
+  </div>
+</aside>

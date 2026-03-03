@@ -2,6 +2,7 @@
 title: "Navigating the Challenges of Cross-functional Teams: the Role of Governance and Common Goals"
 pubDate: "2025-05-29"
 tags: ["Leadership"]
+excerpt: "Cross-functional teams often struggle because of missing governance and unclear common goals. How to fix both so teams can deliver and people can thrive."
 ---
 
 As a result, the teams struggled to meet deadlines, achieve both team and company objectives, fulfill management expectations, and deliver value. Internally, team members had difficulty fitting in, collaborating effectively, staying engaged, and reaching their full potential.
