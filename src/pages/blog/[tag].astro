@@ -21,6 +21,14 @@ const posts = allPosts
 
 const displayTag = posts[0]?.data.tags.find((t) => t.toLowerCase() === tag) ?? tag!;
 
+const tagDescriptions: Record<string, string> = {
+  engineering: 'Practical thinking on software craft — architecture, technical debt, AI-assisted development, and the engineering principles that outlast every trend.',
+  ai: 'The AI shift, unfiltered — what the hype misses, what the technology actually enables, and how to build with it without losing your engineering instincts.',
+  leadership: 'On building teams that last — psychological safety, cross-functional dynamics, the trap of the hero, and what effective leadership actually looks like day to day.',
+  product: 'Where engineering meets business strategy — SaaS growth, product thinking, and the uncomfortable tension between shipping fast and building right.',
+  personal: 'Stories from 20+ years in the industry — the lessons that only come with time, and what it means to build a career you believe in.',
+};
+
 function formatDateShort(date: Date) {
   return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 }
@@ -28,7 +36,7 @@ function formatDateShort(date: Date) {
 
 <BaseLayout
   title={`${displayTag} — Blog | pixari.dev`}
-  description={`Writing tagged ${displayTag} — engineering, AI, leadership, and building things that matter.`}
+  description={tagDescriptions[tag!] ?? `Writing tagged ${displayTag} — engineering, AI, leadership, and building things that matter.`}
 >
   <Nav activePage="blog" />
   <CommandPalette />
@@ -39,6 +47,9 @@ function formatDateShort(date: Date) {
       <p class="section-label">Category</p>
       <h1 class="blog-page-title"><span class="gradient-text">{displayTag}</span></h1>
       <p class="blog-page-subtitle">{posts.length} post{posts.length !== 1 ? 's' : ''}</p>
+      {tagDescriptions[tag!] && (
+        <p class="blog-page-tag-description">{tagDescriptions[tag!]}</p>
+      )}
     </div>
 
     <div class="blog-page-list-wrap">

@@ -69,3 +69,5 @@ The "Senior" engineer optimizes for safety. The **Lead** optimizes for value.
 - **Stop** selling options to the business.
 
 Pick a direction. Hard-code the decision. Own the consequences. If you aren't willing to rewrite your code later, you shouldn't be writing it now.
+
+And when you do accumulate debt — because you will — [not all of it needs to be repaid](/not-all-technical-debt-needs-to-be-repaid/). Some debt is a scar worth keeping.

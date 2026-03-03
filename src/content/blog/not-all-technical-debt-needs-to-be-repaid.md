@@ -16,4 +16,6 @@ My personal rule of thumb for navigating technical debt is the "**interest rate*
 
 **Pragmatic engineering** is about making smart trade-offs, not achieving impossible perfection. It's about understanding that every engineering decision involves balancing speed, quality, and scope. By applying a strategic lens to technical debt, you empower your team to focus on what truly matters, delivering value while keeping your systems maintainable and your team productive.
 
+The flip side of this is equally important: not everything you build needs to be "future-proof." If pragmatic debt management is about choosing what *not* to fix, [build for today](/future-proofing-is-cowardice-build-for-today-or-dont-build-at-all/) is about choosing what *not* to build.
+
 How do you and your team approach technical debt? Do you have a similar prioritization strategy?

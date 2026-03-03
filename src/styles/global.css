@@ -1,3 +1,12 @@
+/* ── Self-hosted fonts ── */
+@import '@fontsource/dm-sans/300.css';
+@import '@fontsource/dm-sans/300-italic.css';
+@import '@fontsource/dm-sans/400.css';
+@import '@fontsource/dm-sans/500.css';
+@import '@fontsource/dm-sans/600.css';
+@import '@fontsource/instrument-serif/400.css';
+@import '@fontsource/instrument-serif/400-italic.css';
+
 /* ── Custom cursor ── */
 .cursor-dot,
 .cursor-ring {
@@ -5,7 +14,7 @@
   top: -4px;
   left: -4px;
   pointer-events: none;
-  z-index: 10000;
+  z-index: 99999;
   border-radius: 50%;
   will-change: transform;
 }
@@ -286,7 +295,7 @@ nav.scrolled {
   font-family: 'DM Sans', sans-serif;
   font-weight: 500;
   text-decoration: none;
-  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: color 0.3s cubic-bezier(0.22, 1, 0.36, 1), background 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1), transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   cursor: pointer;
   border: none;
 }
@@ -403,7 +412,7 @@ section {
   border-radius: 16px;
   border: 1px solid var(--border);
   background: var(--surface);
-  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: background 0.4s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .value-card:hover {
@@ -439,7 +448,7 @@ section {
   padding: 2.5rem 2rem;
   border-radius: 16px;
   border: 1px solid transparent;
-  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: background 0.4s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   cursor: default;
 }
 
@@ -489,7 +498,7 @@ section {
   border: 1px solid var(--border);
   color: var(--text-secondary);
   white-space: nowrap;
-  transition: all 0.3s ease;
+  transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease;
 }
 
 /* ── Skills Section ── */
@@ -504,7 +513,7 @@ section {
   border-radius: 16px;
   border: 1px solid var(--border);
   background: var(--surface);
-  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: background 0.5s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.5s cubic-bezier(0.22, 1, 0.36, 1), transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
   overflow: hidden;
 }
@@ -566,7 +575,7 @@ section {
   border-radius: 20px;
   border: 1px solid var(--border);
   background: var(--surface);
-  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: background 0.5s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.5s cubic-bezier(0.22, 1, 0.36, 1), transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
   overflow: hidden;
 }
@@ -656,7 +665,7 @@ section {
   border: 1px solid var(--border);
   background: #0a0a1a;
   aspect-ratio: 2 / 1;
-  transition: all 0.3s ease;
+  transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease;
 }
 
 .game-wrapper canvas {
@@ -777,7 +786,7 @@ section {
   border-radius: 16px;
   border: 1px solid var(--border);
   background: var(--surface);
-  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: background 0.4s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   text-decoration: none;
   color: inherit;
   display: flex;
@@ -842,7 +851,7 @@ section {
   border-radius: 16px;
   border: 1px solid var(--border);
   background: var(--surface);
-  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: background 0.4s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .education-item:hover {
@@ -880,7 +889,7 @@ section {
   border-radius: 12px;
   border: 1px solid var(--border);
   background: var(--surface);
-  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: background 0.4s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .credential-item:hover {
@@ -917,7 +926,7 @@ section {
   border: 1px solid var(--border);
   background: var(--surface);
   margin-bottom: 1rem;
-  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: background 0.4s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .publication-item:hover {
@@ -949,7 +958,7 @@ section {
   border-radius: 16px;
   border: 1px solid var(--border);
   background: var(--surface);
-  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: background 0.4s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   display: flex;
   flex-direction: column;
 }
@@ -1051,7 +1060,7 @@ section {
   color: var(--text-secondary);
   text-decoration: none;
   font-size: 0.9rem;
-  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: color 0.3s cubic-bezier(0.22, 1, 0.36, 1), background 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1), transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .contact-link:hover {
@@ -1069,6 +1078,28 @@ footer {
   color: var(--text-secondary);
   font-size: 0.8rem;
   border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footer-links {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.footer-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+.footer-links a:hover {
+  color: var(--accent);
 }
 
 
@@ -1254,6 +1285,32 @@ footer {
 .reveal-delay-2 { transition-delay: 0.2s; }
 .reveal-delay-3 { transition-delay: 0.3s; }
 
+/* ── Mobile nav button ── */
+.nav-mobile-btn {
+  display: none;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.nav-mobile-btn:hover {
+  color: var(--text);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ── Hero ⌘K hint centering ── */
+.hero-cmd-hint {
+  margin-top: 2rem !important;
+  justify-content: center !important;
+}
+
 /* ── Responsive ── */
 @media (max-width: 900px) {
   .skills-grid       { grid-template-columns: 1fr 1fr; }
@@ -1291,6 +1348,9 @@ footer {
 @media (max-width: 600px) {
   .skills-grid { grid-template-columns: 1fr; }
   .blog-grid   { grid-template-columns: 1fr; }
+  .cmd-hint    { display: none; }
+  .nav-mobile-btn { display: block; }
+
 
   .nav-links { display: none; }
 

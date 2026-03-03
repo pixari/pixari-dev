@@ -53,13 +53,26 @@
 </section>
 
 <script>
-  import { initGame } from '../../game/Game.js';
+  let loaded = false;
 
-  const startBtn = document.getElementById('game-start-btn');
-  const restartBtn = document.getElementById('game-restart-btn');
+  function boot() {
+    if (loaded) return;
+    loaded = true;
+    import('../../game/Game.js').then(({ initGame }) => {
+      initGame();
+      const startBtn = document.getElementById('game-start-btn');
+      const restartBtn = document.getElementById('game-restart-btn');
+      startBtn?.addEventListener('click', () => { if ((window as any).gInit) (window as any).gInit(); });
+      restartBtn?.addEventListener('click', () => { if ((window as any).gInit) (window as any).gInit(); });
+    });
+  }
 
-  initGame();
-
-  startBtn?.addEventListener('click', () => { if ((window as any).gInit) (window as any).gInit(); });
-  restartBtn?.addEventListener('click', () => { if ((window as any).gInit) (window as any).gInit(); });
+  const section = document.getElementById('game');
+  if (section) {
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { obs.disconnect(); boot(); } },
+      { rootMargin: '200px' },
+    );
+    obs.observe(section);
+  }
 </script>
