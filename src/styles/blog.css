@@ -626,6 +626,30 @@ a.blog-tag:hover {
 .post-back:hover { color: var(--accent); }
 
 /* ─────────────────────────────────────────────
+   Giscus comments
+───────────────────────────────────────────── */
+.giscus-wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 2rem 6rem;
+  border-top: 1px solid var(--border);
+}
+
+.giscus-inner {
+  padding-top: 3rem;
+}
+
+.giscus-inner > .section-label {
+  margin-bottom: 1.5rem;
+}
+
+/* Let giscus iframe fill the container */
+.giscus-container .giscus,
+.giscus-container iframe {
+  width: 100% !important;
+}
+
+/* ─────────────────────────────────────────────
    /now page
 ───────────────────────────────────────────── */
 .now-wrap {
