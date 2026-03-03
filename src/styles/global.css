@@ -123,7 +123,7 @@ body::after {
   z-index: 0;
   opacity: 0.5;
   transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.8s ease;
-  filter: blur(80px);
+  filter: blur(30px);
   will-change: transform;
 }
 
@@ -212,6 +212,54 @@ nav.scrolled {
 
 .nav-links a.active::after {
   width: 100%;
+}
+
+/* ── Hero inner wrapper (parallax target) ── */
+.hero-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  will-change: transform;
+}
+
+/* ── Hero stats row ── */
+.hero-stats {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  margin-top: 3.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 1.0s forwards;
+}
+
+.hero-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.hero-stat-num {
+  font-family: 'Instrument Serif', serif;
+  font-size: 2rem;
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1;
+}
+
+.hero-stat-label {
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+.hero-stat-sep {
+  width: 1px;
+  height: 2.5rem;
+  background: var(--border);
 }
 
 /* ── Hero Section ── */
@@ -1102,6 +1150,28 @@ footer {
   color: var(--accent);
 }
 
+.footer-print-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.footer-print-btn:hover {
+  color: var(--accent);
+  border-color: rgba(126, 184, 255, 0.35);
+}
+
 
 /* ── Command palette ── */
 .cmd-overlay {
@@ -1351,6 +1421,10 @@ footer {
   .cmd-hint    { display: none; }
   .nav-mobile-btn { display: block; }
 
+  .hero-stats { gap: 1.5rem; }
+  .hero-stat-num { font-size: 1.5rem; }
+  .hero-stat-sep { height: 2rem; }
+
 
   .nav-links { display: none; }
 
@@ -1366,6 +1440,36 @@ footer {
   }
 
   .game-touch-controls.active { display: flex; }
+}
+
+/* ── Prefers reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .hero-badge,
+  .hero h1,
+  .hero-subtitle,
+  .hero-cta,
+  .hero-stats {
+    opacity: 1 !important;
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .gradient-text { animation: none !important; }
+  .hero-badge .dot { animation: none !important; }
+  .ambient-glow { display: none !important; }
+  [data-tilt] { transform: none !important; }
 }
 
 /* ── Print ── */

@@ -139,22 +139,25 @@ const breadcrumbJsonLd = {
         <div class="related-posts-inner">
           <p class="section-label">Continue reading</p>
           <div class="related-posts-grid">
-            {relatedPosts.map((p) => (
-              <a href={`/${getPostSlug(p)}/`} class="related-card" data-tilt>
-                <div class="post-cats">
-                  {p.data.tags.slice(0, 2).map(t => (
-                    <a href={`/blog/${t.toLowerCase()}/`} class="blog-tag">{t}</a>
-                  ))}
-                </div>
-                <h3 class="related-card-title" transition:name={`post-title-${getPostSlug(p)}`}>
-                  {p.data.title}
-                </h3>
-                <p class="related-card-excerpt">
-                  {p.data.excerpt ?? p.data.description ?? ''}
-                </p>
-                <span class="related-card-cta">Read →</span>
-              </a>
-            ))}
+            {relatedPosts.map((p) => {
+              const excerpt = p.data.excerpt ?? p.data.description ?? '';
+              return (
+                <a href={`/${getPostSlug(p)}/`} class="related-card" data-tilt>
+                  <div class="post-cats">
+                    {p.data.tags.slice(0, 2).map(t => (
+                      <span class="blog-tag">{t}</span>
+                    ))}
+                  </div>
+                  <h3 class="related-card-title" transition:name={`post-title-${getPostSlug(p)}`}>
+                    {p.data.title}
+                  </h3>
+                  {excerpt && (
+                    <p class="related-card-excerpt">{excerpt}</p>
+                  )}
+                  <span class="related-card-cta">Read →</span>
+                </a>
+              );
+            })}
           </div>
         </div>
       </section>

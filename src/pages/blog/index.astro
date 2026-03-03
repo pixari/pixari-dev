@@ -38,60 +38,66 @@ function formatDateShort(date: Date) {
     </div>
 
     <!-- ── Featured post ── -->
-    {featured && (
-      <div class="blog-page-featured-wrap">
-        <a href={`/${getPostSlug(featured)}/`} class="blog-page-featured" data-tilt>
-          <div class="blog-page-featured-inner">
-            <div class="blog-page-featured-label">
-              <span class="blog-tag-accent">Latest</span>
-              <time datetime={featured.data.pubDate.toISOString()}>
-                {formatDate(featured.data.pubDate)}
-              </time>
+    {featured && (() => {
+      const featuredExcerpt = featured.data.excerpt ?? featured.data.description ?? '';
+      return (
+        <div class="blog-page-featured-wrap">
+          <a href={`/${getPostSlug(featured)}/`} class="blog-page-featured" data-tilt>
+            <div class="blog-page-featured-inner">
+              <div class="blog-page-featured-label">
+                <span class="blog-tag-accent">Latest</span>
+                <time datetime={featured.data.pubDate.toISOString()}>
+                  {formatDate(featured.data.pubDate)}
+                </time>
+              </div>
+              <h2 class="blog-page-featured-title" transition:name={`post-title-${getPostSlug(featured)}`}>
+                {featured.data.title}
+              </h2>
+              {featuredExcerpt && (
+                <p class="blog-page-featured-excerpt">{featuredExcerpt}</p>
+              )}
+              <div class="blog-page-featured-footer">
+                {featured.data.tags.map(tag => (
+                  <span class="blog-tag">{tag}</span>
+                ))}
+                <span class="blog-read-cta">Read →</span>
+              </div>
             </div>
-            <h2 class="blog-page-featured-title" transition:name={`post-title-${getPostSlug(featured)}`}>
-              {featured.data.title}
-            </h2>
-            <p class="blog-page-featured-excerpt">
-              {featured.data.excerpt ?? featured.data.description ?? ''}
-            </p>
-            <div class="blog-page-featured-footer">
-              {featured.data.tags.map(tag => (
-                <span class="blog-tag">{tag}</span>
-              ))}
-              <span class="blog-read-cta">Read →</span>
-            </div>
-          </div>
-        </a>
-      </div>
-    )}
+          </a>
+        </div>
+      );
+    })()}
 
     <!-- ── Post list ── -->
     <div class="blog-page-list-wrap">
-      {rest.map((post) => (
-        <a href={`/${getPostSlug(post)}/`} class="blog-page-item">
-          <div class="blog-page-item-meta">
-            <time datetime={post.data.pubDate.toISOString()}>
-              {formatDateShort(post.data.pubDate)}
-            </time>
-          </div>
-          <div class="blog-page-item-body">
-            {post.data.tags.length > 0 && (
-              <div class="post-cats">
-                {post.data.tags.slice(0, 2).map(tag => (
-                  <span class="blog-tag">{tag}</span>
-                ))}
-              </div>
-            )}
-            <h3 class="blog-page-item-title" transition:name={`post-title-${getPostSlug(post)}`}>
-              {post.data.title}
-            </h3>
-            <p class="blog-page-item-excerpt">
-              {post.data.excerpt ?? post.data.description ?? ''}
-            </p>
-          </div>
-          <span class="blog-page-item-arrow">→</span>
-        </a>
-      ))}
+      {rest.map((post) => {
+        const excerpt = post.data.excerpt ?? post.data.description ?? '';
+        return (
+          <a href={`/${getPostSlug(post)}/`} class="blog-page-item">
+            <div class="blog-page-item-meta">
+              <time datetime={post.data.pubDate.toISOString()}>
+                {formatDateShort(post.data.pubDate)}
+              </time>
+              {post.data.tags.length > 0 && (
+                <div class="post-cats">
+                  {post.data.tags.slice(0, 2).map(tag => (
+                    <span class="blog-tag">{tag}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div class="blog-page-item-body">
+              <h3 class="blog-page-item-title" transition:name={`post-title-${getPostSlug(post)}`}>
+                {post.data.title}
+              </h3>
+              {excerpt && (
+                <p class="blog-page-item-excerpt">{excerpt}</p>
+              )}
+            </div>
+            <span class="blog-page-item-arrow">→</span>
+          </a>
+        );
+      })}
     </div>
 
   </main>

@@ -2,6 +2,11 @@ export function initAmbientGlow() {
   const glow = document.getElementById('glow');
   if (!glow) return;
 
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    glow.style.display = 'none';
+    return;
+  }
+
   let targetX = window.innerWidth / 2;
   let targetY = window.innerHeight / 2;
   let ticking = false;

@@ -53,29 +53,32 @@ function formatDateShort(date: Date) {
     </div>
 
     <div class="blog-page-list-wrap">
-      {posts.map((post) => (
-        <a href={`/${getPostSlug(post)}/`} class="blog-page-item" transition:name={`post-title-${getPostSlug(post)}`}>
-          <div class="blog-page-item-meta">
-            <time datetime={post.data.pubDate.toISOString()}>
-              {formatDateShort(post.data.pubDate)}
-            </time>
-          </div>
-          <div class="blog-page-item-body">
-            {post.data.tags.length > 0 && (
-              <div class="post-cats">
-                {post.data.tags.slice(0, 2).map(t => (
-                  <span class="blog-tag">{t}</span>
-                ))}
-              </div>
-            )}
-            <h3 class="blog-page-item-title">{post.data.title}</h3>
-            <p class="blog-page-item-excerpt">
-              {post.data.excerpt ?? post.data.description ?? ''}
-            </p>
-          </div>
-          <span class="blog-page-item-arrow">→</span>
-        </a>
-      ))}
+      {posts.map((post) => {
+        const excerpt = post.data.excerpt ?? post.data.description ?? '';
+        return (
+          <a href={`/${getPostSlug(post)}/`} class="blog-page-item" transition:name={`post-title-${getPostSlug(post)}`}>
+            <div class="blog-page-item-meta">
+              <time datetime={post.data.pubDate.toISOString()}>
+                {formatDateShort(post.data.pubDate)}
+              </time>
+              {post.data.tags.length > 0 && (
+                <div class="post-cats">
+                  {post.data.tags.slice(0, 2).map(t => (
+                    <span class="blog-tag">{t}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div class="blog-page-item-body">
+              <h3 class="blog-page-item-title">{post.data.title}</h3>
+              {excerpt && (
+                <p class="blog-page-item-excerpt">{excerpt}</p>
+              )}
+            </div>
+            <span class="blog-page-item-arrow">→</span>
+          </a>
+        );
+      })}
     </div>
   </main>
 </BaseLayout>

@@ -63,6 +63,9 @@ const latestPosts = allPosts
   import { initCommandPalette } from '../scripts/command-palette';
   import { initNav } from '../scripts/nav';
   import { initTilt } from '../scripts/tilt';
+  import { initScramble } from '../scripts/scramble';
+  import { initMagnetic } from '../scripts/magnetic';
+  import { initParallax } from '../scripts/parallax';
 
   document.addEventListener('astro:page-load', () => {
     initScrollReveal();
@@ -70,6 +73,9 @@ const latestPosts = allPosts
     initCommandPalette();
     initNav();
     initTilt();
+    initScramble();
+    initMagnetic();
+    initParallax();
   });
 
   (window as any).__updateMousePos = (e: MouseEvent, el: HTMLElement) => {
