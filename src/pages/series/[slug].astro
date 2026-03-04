@@ -1,0 +1,79 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/nav/Nav.astro';
+import CommandPalette from '../../components/nav/CommandPalette.astro';
+import { getCollection } from 'astro:content';
+import { SERIES, getAllSeries } from '../../utils/series';
+import { getPostSlug } from '../../utils/posts';
+import '../../styles/blog.css';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+  const allSeries = getAllSeries(allPosts);
+  return allSeries.map(({ meta, posts }) => ({
+    params: { slug: meta.slug },
+    props: { meta, posts },
+  }));
+};
+
+const { meta, posts } = Astro.props;
+
+function readingTime(post: (typeof posts)[0]) {
+  return Math.max(1, Math.round((post.body ?? '').trim().split(/\s+/).length / 200));
+}
+---
+
+<BaseLayout
+  title={`${meta.title} — Series | pixari.dev`}
+  description={meta.description}
+>
+  <Nav activePage="blog" />
+  <CommandPalette />
+
+  <main>
+    <div class="series-page-header">
+      <a href="/blog/" class="post-back">← Back to blog</a>
+      <span class="series-badge">Series</span>
+      <h1 class="series-page-title">{meta.title}</h1>
+      <p class="series-page-description">{meta.description}</p>
+      <p class="series-page-count">{posts.length} articles</p>
+    </div>
+
+    <div class="series-page-list">
+      {posts.map((post, i) => {
+        const excerpt = post.data.excerpt ?? post.data.description ?? '';
+        return (
+          <a href={`/${getPostSlug(post)}/`} class="series-page-item reveal">
+            <span class="series-page-num">{String(i + 1).padStart(2, '0')}</span>
+            <div class="series-page-item-body">
+              <h2 class="series-page-item-title">{post.data.title}</h2>
+              {excerpt && <p class="series-page-item-excerpt">{excerpt}</p>}
+              <div class="series-page-item-meta">
+                <time datetime={post.data.pubDate.toISOString()}>
+                  {post.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                </time>
+                <span class="blog-reading-time">{readingTime(post)} min read</span>
+              </div>
+            </div>
+            <span class="series-page-item-arrow">→</span>
+          </a>
+        );
+      })}
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  import { initScrollReveal } from '../../scripts/scroll-reveal';
+  import { initAmbientGlow } from '../../scripts/ambient-glow';
+  import { initCommandPalette } from '../../scripts/command-palette';
+  import { initNav } from '../../scripts/nav';
+
+  document.addEventListener('astro:page-load', () => {
+    initScrollReveal();
+    initAmbientGlow();
+    initCommandPalette();
+    initNav();
+  });
+</script>

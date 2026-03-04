@@ -1,0 +1,33 @@
+---
+import type { SeriesContext } from '../../utils/series';
+import { getPostSlug } from '../../utils/posts';
+
+interface Props {
+  series: SeriesContext;
+}
+
+const { series } = Astro.props;
+const { prev, next, meta } = series;
+---
+
+<nav class="series-nav" aria-label="Series navigation">
+  {prev ? (
+    <a href={`/${getPostSlug(prev)}/`} class="series-nav-link series-nav-prev">
+      <span class="series-nav-dir">← Previous in series</span>
+      <span class="series-nav-title">{prev.data.title}</span>
+    </a>
+  ) : (
+    <div></div>
+  )}
+  {next ? (
+    <a href={`/${getPostSlug(next)}/`} class="series-nav-link series-nav-next">
+      <span class="series-nav-dir">Next in series →</span>
+      <span class="series-nav-title">{next.data.title}</span>
+    </a>
+  ) : (
+    <a href={`/series/${meta.slug}/`} class="series-nav-link series-nav-next">
+      <span class="series-nav-dir">Series complete →</span>
+      <span class="series-nav-title">View all in {meta.title}</span>
+    </a>
+  )}
+</nav>

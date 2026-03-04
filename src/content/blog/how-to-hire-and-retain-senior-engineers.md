@@ -3,6 +3,8 @@ title: "How to Hire and Retain Senior Engineers"
 pubDate: "2024-10-30"
 tags: ["Leadership", "Engineering"]
 excerpt: "Practical advice on hiring senior engineers and keeping them: what to look for, how to sell the role, and what actually drives retention."
+series: "engineering-leadership-playbook"
+seriesOrder: 6
 ---
 
 Senior engineers are force multipliers: they raise quality, unblock others, and shape technical direction. They’re also in high demand and expensive to replace. **Hiring and retaining senior engineers** is one of the highest-leverage things an engineering leader can do. Here’s how to do both well.

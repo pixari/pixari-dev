@@ -3,6 +3,8 @@ title: "Handling Conflict in Engineering Teams"
 pubDate: "2023-04-04"
 tags: ["Leadership", "Engineering"]
 excerpt: "Conflict in engineering teams is normal. How to address it early, facilitate constructive disagreement, and when to escalate."
+series: "engineering-leadership-playbook"
+seriesOrder: 4
 ---
 
 Disagreement in engineering teams is normal—different technical opinions, priorities, and styles. Unhandled, it becomes conflict: tension, silos, or resentment. **Handling conflict** well doesn’t mean avoiding it; it means addressing it early and turning it into better decisions and clearer norms. Here’s how.

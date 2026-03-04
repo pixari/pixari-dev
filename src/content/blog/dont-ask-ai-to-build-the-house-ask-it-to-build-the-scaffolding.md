@@ -3,6 +3,8 @@ title: "Don't ask AI to build the house. Ask it to build the scaffolding."
 pubDate: "2025-11-30"
 tags: ["AI", "Engineering"]
 excerpt: "The real value of AI in development isn't production code—it's support code: tooling, tests, and scaffolding that gets you to the hard part faster."
+series: "ai-and-engineering"
+seriesOrder: 1
 ---
 
 The noise level in our industry right now is deafening.

@@ -3,6 +3,8 @@ title: "How to Say No (and Yes) as an Engineering Leader"
 pubDate: "2023-05-09"
 tags: ["Leadership", "Engineering"]
 excerpt: "Saying no is part of the job. How to say no clearly and respectfully, when to say yes, and how to offer alternatives that protect your team."
+series: "engineering-leadership-playbook"
+seriesOrder: 5
 ---
 
 Engineering leaders are constantly asked for more: more features, more speed, more support. Saying yes to everything burns out the team and dilutes impact. **Saying no** is how you protect focus and set expectations—but it has to be done in a way that builds trust, not resentment. Here’s how to say no (and when to say yes) as an engineering leader.

@@ -3,6 +3,8 @@ title: "Delegation for Engineering Managers: What to Let Go First"
 pubDate: "2023-03-28"
 tags: ["Leadership", "Engineering"]
 excerpt: "Practical delegation for engineering managers: what to delegate first, how to hand off without micromanaging, and when to step back in."
+series: "engineering-leadership-playbook"
+seriesOrder: 2
 ---
 
 New engineering managers often keep doing IC work because it’s familiar and it feels like “helping.” The cost is burned-out managers and underdeveloped reports. **Delegation** is how you scale your impact and grow your team. Here’s what to let go first and how to do it without dropping the ball.

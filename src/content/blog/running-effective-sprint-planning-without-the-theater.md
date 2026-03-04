@@ -3,6 +3,8 @@ title: "Running Effective Sprint Planning (Without the Theater)"
 pubDate: "2023-05-02"
 tags: ["Engineering", "Leadership"]
 excerpt: "Sprint planning that actually aligns the team: how long it should take, what to prepare, and how to avoid ceremony without substance."
+series: "engineering-practices"
+seriesOrder: 1
 ---
 
 Sprint planning can feel like theater: everyone in a room, tickets moved around, and two hours later you’re not sure what changed. Done well, it aligns the team on what matters and who’s doing what. Here’s how to run **effective sprint planning** without the performative parts—and how to know when you’re done.

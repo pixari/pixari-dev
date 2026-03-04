@@ -1,0 +1,39 @@
+---
+import type { SeriesContext } from '../../utils/series';
+import { getPostSlug } from '../../utils/posts';
+
+interface Props {
+  series: SeriesContext;
+}
+
+const { series } = Astro.props;
+const { meta, posts, currentIndex } = series;
+const progress = ((currentIndex + 1) / posts.length) * 100;
+---
+
+<aside class="series-banner" aria-label={`Part of series: ${meta.title}`}>
+  <div class="series-banner-top">
+    <span class="series-badge">Series</span>
+    <a href={`/series/${meta.slug}/`} class="series-title-link">{meta.title}</a>
+    <span class="series-progress-label">Part {currentIndex + 1} of {posts.length}</span>
+  </div>
+  <div class="series-progress-bar" role="progressbar" aria-valuenow={currentIndex + 1} aria-valuemin={1} aria-valuemax={posts.length}>
+    <div class="series-progress-fill" style={`width: ${progress}%`}></div>
+  </div>
+  <ol class="series-toc">
+    {posts.map((p, i) => {
+      const isCurrent = i === currentIndex;
+      const slug = getPostSlug(p);
+      return (
+        <li class:list={['series-toc-item', { 'series-toc-current': isCurrent, 'series-toc-done': i < currentIndex }]}>
+          <span class="series-toc-num">{i + 1}</span>
+          {isCurrent ? (
+            <span class="series-toc-text">{p.data.title}</span>
+          ) : (
+            <a href={`/${slug}/`} class="series-toc-text">{p.data.title}</a>
+          )}
+        </li>
+      );
+    })}
+  </ol>
+</aside>

@@ -3,6 +3,8 @@ title: "Engineering Metrics That Actually Improve Outcomes (Beyond Velocity and 
 pubDate: "2024-01-19"
 tags: ["Engineering", "Leadership"]
 excerpt: "Velocity and story points often mislead. Here are engineering metrics that tie to delivery, quality, and team health—and how to use them."
+series: "engineering-practices"
+seriesOrder: 4
 ---
 
 Velocity and story points are the default “engineering metrics” in a lot of teams. The problem: they’re easy to game, don’t capture quality or outcomes, and can push people toward quantity over impact. So what **engineering metrics** actually help you improve outcomes—delivery, quality, and team health?

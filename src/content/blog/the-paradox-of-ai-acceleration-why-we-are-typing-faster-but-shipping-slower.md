@@ -3,6 +3,8 @@ title: "The Paradox of AI-Acceleration: Why We Are Typing Faster but Shipping Sl
 pubDate: "2025-12-03"
 tags: ["AI", "Engineering"]
 excerpt: "AI lets us generate more code—but cycle times aren't dropping. Why velocity without tests, review, and observability just adds mass and risk."
+series: "ai-and-engineering"
+seriesOrder: 3
 ---
 
 We are deep in the deployment phase of Generative AI.

@@ -10,7 +10,7 @@ export async function GET(_context: APIContext) {
 
   const lines: string[] = [
     '# pixari.dev',
-    '> Senior Engineering Manager in Munich. 20+ years building digital products, leading teams, and driving engineering excellence.',
+    '> Engineering manager in Munich. Writing about software, teams, and AI.',
     '',
     '## About',
     '',
@@ -21,9 +21,9 @@ export async function GET(_context: APIContext) {
     '',
     '## Pages',
     '',
-    '- [Home](https://pixari.dev/): Resume and portfolio',
+    '- [Home](https://pixari.dev/): About and work history',
     '- [Blog](https://pixari.dev/blog/): All blog posts',
-    '- [RSS Feed](https://pixari.dev/rss.xml): Subscribe to new posts',
+    '- [RSS Feed](https://pixari.dev/rss.xml): RSS feed',
     '',
     '## Blog Posts',
     '',

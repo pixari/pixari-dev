@@ -3,6 +3,8 @@ title: "From IC to Engineering Manager: First 90 Days"
 pubDate: "2025-01-08"
 tags: ["Leadership", "Engineering"]
 excerpt: "Your first 90 days as an engineering manager: what to do, what to avoid, and how to set yourself and your team up for success."
+series: "engineering-leadership-playbook"
+seriesOrder: 1
 ---
 
 The transition from individual contributor to **engineering manager** is a career shift, not a promotion. Your success is no longer measured by your own code or designs but by your team’s outcomes, growth, and health. The **first 90 days** set the tone. Here’s how to use them well.

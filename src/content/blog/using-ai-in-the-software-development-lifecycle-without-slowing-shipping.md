@@ -3,6 +3,8 @@ title: "Using AI in the Software Development Lifecycle (Without Slowing Shipping
 pubDate: "2024-09-11"
 tags: ["Engineering", "AI"]
 excerpt: "Where AI helps in the SDLC—and where it doesn’t. How to adopt AI coding tools and automation without slowing down delivery."
+series: "ai-and-engineering"
+seriesOrder: 2
 ---
 
 AI is everywhere in the software development lifecycle: code completion, test generation, docs, and even design. The promise is faster, better output. The risk is **typing faster but shipping slower**—more generated code to review, more wrong abstractions, and more time debugging AI output. Here’s how to **use AI in the software development lifecycle** in ways that actually speed you up instead of slowing you down.

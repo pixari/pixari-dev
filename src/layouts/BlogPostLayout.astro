@@ -5,9 +5,13 @@ import CommandPalette from '../components/nav/CommandPalette.astro';
 import Giscus from '../components/blog/Giscus.astro';
 import ShareButton from '../components/blog/ShareButton.astro';
 import AuthorCard from '../components/blog/AuthorCard.astro';
+import SeriesBanner from '../components/blog/SeriesBanner.astro';
+import SeriesNav from '../components/blog/SeriesNav.astro';
 import '../styles/blog.css';
 import type { CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 import { getPostSlug } from '../utils/posts';
+import { getSeriesContext } from '../utils/series';
 
 interface Props {
   post: CollectionEntry<'blog'>;
@@ -16,6 +20,9 @@ interface Props {
 }
 
 const { post, rawContent = '', relatedPosts = [] } = Astro.props;
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const seriesCtx = getSeriesContext(post, allPosts);
 const { title, description, pubDate, updatedDate, heroImage, tags, excerpt } = post.data;
 const slug = getPostSlug(post);
 
@@ -97,7 +104,7 @@ const breadcrumbJsonLd = {
           <a href="/blog/" class="post-back">← All posts</a>
 
           {tags.length > 0 && (
-            <div class="post-tags">
+            <div class="post-tags" transition:name={`post-tags-${slug}`}>
               {tags.map((tag) => (
                 <a href={`/blog/${tag.toLowerCase()}/`} class="post-tag">{tag}</a>
               ))}
@@ -124,21 +131,30 @@ const breadcrumbJsonLd = {
         </div>
 
         {heroImage && (
-          <div style="max-width:760px;margin:0 auto;padding:0 2rem 2rem;">
+          <div class="post-hero-wrap">
             <img
               src={heroImage}
               alt={title}
-              style="width:100%;border-radius:12px;"
+              width={1520}
+              height={800}
+              loading="eager"
+              decoding="async"
+              fetchpriority="high"
+              class="post-hero-img"
               transition:name={`post-hero-${slug}`}
             />
           </div>
         )}
+
+        {seriesCtx && <SeriesBanner series={seriesCtx} />}
 
         <div class="post-body" data-pagefind-body>
           <slot />
         </div>
 
         <ShareButton title={title} url={postUrl} />
+
+        {seriesCtx && <SeriesNav series={seriesCtx} />}
       </article>
 
       <!-- ToC sidebar (populated by toc.ts on desktop) -->

@@ -12,6 +12,8 @@ const blog = defineCollection({
     draft: z.boolean().default(false),
     wpId: z.number().optional(),
     excerpt: z.string().optional(),
+    series: z.string().optional(),
+    seriesOrder: z.number().optional(),
   }),
 });
 

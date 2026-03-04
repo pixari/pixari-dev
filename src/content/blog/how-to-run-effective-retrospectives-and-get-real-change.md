@@ -3,6 +3,8 @@ title: "How to Run Effective Retrospectives (and Get Real Change)"
 pubDate: "2023-03-05"
 tags: ["Leadership", "Engineering"]
 excerpt: "Retrospectives that actually lead to change: structure, facilitation tips, and how to turn discussion into experiments the team will run."
+series: "engineering-practices"
+seriesOrder: 2
 ---
 
 Retrospectives are supposed to be where teams reflect and improve. Too often they become a ritual: same format, same complaints, no follow-through. Here’s how to run **effective retrospectives** that produce real change—without turning them into a chore.

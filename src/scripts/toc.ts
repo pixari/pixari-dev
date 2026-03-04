@@ -54,11 +54,18 @@ export function initToc() {
     .querySelectorAll<HTMLAnchorElement>('.toc-link')
     .forEach((a) => linkMap.set(a.getAttribute('href')!.slice(1), a));
 
+  let activeId = '';
   const observer = new IntersectionObserver(
     (entries) => {
       for (const { isIntersecting, target } of entries) {
         if (isIntersecting) {
-          linkMap.forEach((a, id) => a.classList.toggle('toc-active', id === target.id));
+          activeId = target.id;
+          const activeIdx = headings.findIndex((h) => h.id === activeId);
+          linkMap.forEach((a, id) => {
+            const idx = headings.findIndex((h) => h.id === id);
+            a.classList.toggle('toc-active', id === activeId);
+            a.classList.toggle('toc-passed', idx < activeIdx);
+          });
         }
       }
     },

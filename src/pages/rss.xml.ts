@@ -14,7 +14,7 @@ export async function GET(context: APIContext) {
   return rss({
     title: 'pixari.dev',
     description:
-      'Writing about engineering, AI, leadership, and building digital products.',
+      'Writing about engineering, AI, and leadership.',
     site: context.site!,
     xmlns: { atom: 'http://www.w3.org/2005/Atom' },
     items: sorted.map((post) => ({

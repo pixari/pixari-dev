@@ -3,6 +3,8 @@ title: "How to Run Effective Engineering 1:1s (Agenda, Frequency, Outcomes)"
 pubDate: "2023-05-12"
 tags: ["Leadership", "Engineering"]
 excerpt: "A practical guide to engineering 1:1s: how often to run them, what to put on the agenda, and how to turn conversations into clear outcomes and trust."
+series: "engineering-leadership-playbook"
+seriesOrder: 3
 ---
 
 One-on-ones are the backbone of engineering leadership. Done well, they build trust, surface problems early, and align individual growth with team goals. Done poorly, they feel like a checkbox—and your reports will disengage fast.

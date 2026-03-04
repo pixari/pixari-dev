@@ -3,6 +3,8 @@ title: "Writing Better RFCs and Design Docs"
 pubDate: "2023-03-12"
 tags: ["Engineering", "Leadership"]
 excerpt: "RFCs and design docs that get read and get feedback: structure, audience, and how to make decisions instead of endless discussion."
+series: "engineering-practices"
+seriesOrder: 3
 ---
 
 RFCs (Request for Comments) and design docs are how engineering teams align on the “what” and “why” before writing code. Done well, they reduce rework and create a record of decisions. Done poorly, they sit unread or trigger endless debate. Here’s how to write **better RFCs and design docs** that get read, get feedback, and lead to decisions.
