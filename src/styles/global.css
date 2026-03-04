@@ -1563,6 +1563,95 @@ footer {
   border-color: rgba(255, 255, 255, 0.2);
 }
 
+/* ── Mobile menu ── */
+.mobile-menu-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.mobile-menu-overlay.active {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.mobile-menu-overlay.visible {
+  opacity: 1;
+}
+
+.mobile-menu {
+  width: min(320px, 85vw);
+  height: 100%;
+  background: var(--bg);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mobile-menu-overlay.visible .mobile-menu {
+  transform: translateX(0);
+}
+
+.mobile-menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.mobile-menu-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.mobile-menu-close:hover {
+  color: var(--text);
+}
+
+.mobile-menu-links {
+  list-style: none;
+  padding: 1rem 0;
+  margin: 0;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.mobile-menu-links li {
+  border-bottom: 1px solid var(--border);
+}
+
+.mobile-menu-links a {
+  display: block;
+  padding: 1rem 1.5rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  transition: color 0.15s, background 0.15s;
+}
+
+.mobile-menu-links a:hover,
+.mobile-menu-links a.active {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.03);
+}
+
 /* ── Hero ⌘K hint centering ── */
 .hero-cmd-hint {
   margin-top: 2rem !important;
@@ -1721,7 +1810,7 @@ footer {
     border-color: #ddd !important;
   }
 
-  body::after, .ambient-glow, .cmd-overlay,
+  body::after, .ambient-glow, .cmd-overlay, .mobile-menu-overlay,
   .cmd-hint, .hero-cta, .divider, .blog-more,
   .testimonials-toggle, .project-link, footer,
   #blog, #projects, #game, #testimonials {

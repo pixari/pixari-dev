@@ -21,8 +21,27 @@ const { activePage = 'home' } = Astro.props;
     <span class="cmd-hint" onclick="window.openCmdPalette()" aria-label="Open command palette">
       <kbd>⌘K</kbd>
     </span>
-    <button class="nav-mobile-btn" onclick="window.openCmdPalette()" aria-label="Open navigation menu">
+    <button class="nav-mobile-btn" id="mobileMenuBtn" aria-label="Open navigation menu" aria-expanded="false">
       Menu
     </button>
   </nav>
 </header>
+
+<div class="mobile-menu-overlay" id="mobileMenuOverlay">
+  <div class="mobile-menu" role="dialog" aria-label="Navigation menu">
+    <div class="mobile-menu-header">
+      <a href="/" class="nav-logo">pixari</a>
+      <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">&times;</button>
+    </div>
+    <ul class="mobile-menu-links">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/#experience">Experience</a></li>
+      <li><a href="/blog/" class={activePage === 'blog' ? 'active' : ''}>Blog</a></li>
+      <li><a href="/now/" class={activePage === 'now' ? 'active' : ''}>Now</a></li>
+      <li><a href="/#projects">Side Projects</a></li>
+      <li><a href="/sources/" class={activePage === 'sources' ? 'active' : ''}>Sources</a></li>
+      <li><a href="/#game">Game</a></li>
+      <li><a href="/#contact">Contact</a></li>
+    </ul>
+  </div>
+</div>
