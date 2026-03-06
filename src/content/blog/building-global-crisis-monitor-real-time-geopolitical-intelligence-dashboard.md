@@ -5,7 +5,7 @@ tags: ["Engineering", "Personal", "AI"]
 excerpt: "I built a system that ingests 80+ news feeds, clusters them with embeddings, synthesises events with AI, and surfaces a live map and briefings-plus auto-publishing to X and Threads."
 ---
 
-**Global Crisis Monitor** is a personal, artistic project. I built it in a period when wars that once felt distant became part of everyday conversation-appearing in feeds and notifications alongside everything else. There is something disorienting about that: a bombing in a city you can name, a ceasefire that collapsed overnight, a famine declared-and then, scrolling past it, an advertisement. The architecture of attention flattens everything into the same urgency and the same forgettability.
+[**Global Crisis Monitor**](https://global-crisis-monitor.com) is a personal, artistic project. I built it in a period when wars that once felt distant became part of everyday conversation-appearing in feeds and notifications alongside everything else. There is something disorienting about that: a bombing in a city you can name, a ceasefire that collapsed overnight, a famine declared-and then, scrolling past it, an advertisement. The architecture of attention flattens everything into the same urgency and the same forgettability.
 
 I wanted to refuse that flattening. Not a feed aggregator; a single surface where the signals are collected, held together, and given weight. So I built an ingester that turns 80+ RSS feeds into structured geopolitical events, and a dashboard that shows them on a map, in a feed, and in AI-generated briefings every twenty minutes. **It is not an answer. It is not even a good map.** It is the act of not looking away-run as software, updated continuously, rendered in the dark.
 
