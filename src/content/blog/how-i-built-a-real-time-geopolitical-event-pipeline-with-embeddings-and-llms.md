@@ -7,7 +7,7 @@ excerpt: "A deep technical walkthrough of a 7-stage pipeline that ingests 100+ R
 
 I run a side project called [Global Crisis Monitor](https://global-crisis-monitor.com) — a real-time geopolitical intelligence dashboard that turns 100+ news feeds into structured, impact-scored events on a map. [The first post](/building-global-crisis-monitor-real-time-geopolitical-intelligence-dashboard/) covered the _why_. This one covers the _how_: every pipeline stage, every threshold, and every tradeoff I made along the way.
 
-The system runs continuously on a Hetzner server orchestrated by [Coolify](https://coolify.io), processes around 1,000 articles per day, and produces structured events that appear on the dashboard within minutes. If you're building anything that turns many documents into deduplicated, structured insights — news aggregation, support-ticket triage, or research synthesis — the architecture in this post transfers directly.
+The system runs continuously on a Hetzner server orchestrated by [Coolify](https://coolify.io), processes around 1,000 articles per day, and produces structured events that appear on the dashboard typically within 10–15 minutes of an article being published. At this volume, LLM cost for synthesis is on the order of a few dollars per day; embeddings are free (Ollama). If you're building anything that turns many documents into deduplicated, structured insights — news aggregation, support-ticket triage, or research synthesis — the architecture in this post transfers directly.
 
 > **TL;DR** — A 7-stage pipeline: **Fetch** (RSS, incremental, watermarked) → **Embed** (Ollama, 768-dim) → **Cluster** (pgvector, 0.72 similarity, 20-min hold) → **Synthesize** (3-pass LLM: triage, extraction, assessment with calibration anchors) → **Conflict Link** (keyword + embedding, multi-match) → **Enrich** (GDELT, ReliefWeb, UCDP, Wikipedia) → **Publish** (Telegram, IndexNow, social). Key lesson: embed and cluster before you send anything to an LLM, or you get duplicates and drift.
 
@@ -19,7 +19,11 @@ The core runs as a **7-stage sequential pipeline**. Each stage reads from and wr
 1. Fetch → 2. Embed → 3. Cluster → 4. Synthesize → 5. Conflict Link → 6. Enrich → 7. Publish
 ```
 
-The ingester is a [Hono](https://hono.dev) microservice running on [Bun](https://bun.sh). The dashboard is a [Next.js](https://nextjs.org) app (App Router, React 19). Both share the same Postgres through [Prisma](https://prisma.io). Below is the full architecture, stage by stage.
+The ingester is a [Hono](https://hono.dev) microservice running on [Bun](https://bun.sh). The dashboard is a [Next.js](https://nextjs.org) app (App Router, React 19). Both share the same Postgres through [Prisma](https://prisma.io).
+
+**Schedule and re-runs.** Each stage runs on its own cron; they don't wait for each other. Fetch runs every few minutes, Embed and Cluster more frequently so new articles move through quickly, Synthesize and Enrich when there's work to do. Because each stage only processes records in the right status (e.g. Fetch only inserts new articles, Embed only picks `fetched` articles), you can re-run a stage without re-triggering the whole pipeline — useful after a deploy or to backfill. Concurrency is single-worker per stage: one Fetch run at a time, one Synthesize run at a time. `FOR UPDATE SKIP LOCKED` (see Data Model) ensures that if you ever run multiple workers, they won't double-process the same rows.
+
+Below is the full architecture, stage by stage.
 
 <p style="margin: 1.5rem 0;"><img src="/images/blog/pipeline.png" alt="Pipeline Health — stage status, processing times, article queue (fetched → embedded → clustered → synthesized), database totals" style="max-width: 100%; width: 900px; height: auto; border-radius: 8px;" /></p>
 
@@ -45,11 +49,15 @@ Deduplication starts here with two checks:
 | **Exact URL match** | `Article.url` has a unique constraint |
 | **Content hash** | SHA-256 of the normalised title catches the same story syndicated across outlets |
 
+Title normalisation (trim, lowercase, collapse whitespace) is applied before the hash and again before embedding so syndicated variants match. We don't hammer feeds: tier limits (5 or 15 articles per fetch) and staggered cron keep us well under any reasonable rate limit; the main backpressure is "only fetch after watermark."
+
 Failed feeds increment a `consecutiveErrors` counter and are skipped after 5 consecutive failures, so one broken RSS feed can't stall the pipeline.
 
 ## Stage 2: Embed — Self-Hosted Vector Embeddings
 
 Every new article gets a 768-dimensional vector embedding via [Ollama](https://ollama.com) running `nomic-embed-text` locally on the server. I switched from OpenAI's `text-embedding-3-small` to a self-hosted model to eliminate per-request costs and latency to an external API.
+
+**What gets embedded.** We embed a single concatenated string: normalised title + first 500 characters of the article body (or summary if present). That keeps the vector focused on the main claim and early context; full-body embedding would dilute signal and blow token limits. The same normalisation as for the content hash (trim, lowercase, collapse whitespace) is applied before sending to Ollama.
 
 The embeddings are batched (100 texts per Ollama request) and stored directly on the `Article` record as a `vector(768)` column in Postgres, leveraging pgvector.
 
@@ -69,7 +77,7 @@ The clustering algorithm:
 |------|--------|
 | 1 | Take all articles with status `embedded` |
 | 2 | For each article, search existing pending clusters using pgvector's cosine distance (`<=>` operator) against the cluster centroid |
-| 3 | If similarity ≥ 0.72 → assign to that cluster; update centroid: `centroid += (new_embedding - centroid) / n` |
+| 3 | If similarity ≥ 0.72 → assign to that cluster; update centroid: `centroid += (new_embedding - centroid) / n` (n = cluster size after adding the article) |
 | 4 | If no match → create a new single-article cluster |
 
 I use **HNSW indexes** on the vector columns for approximate nearest-neighbor search, which keeps cluster assignment sub-millisecond even as the article count grows.
@@ -84,7 +92,7 @@ This is the most complex stage. Each mature cluster (one that has passed the 20-
 
 A fast relevance filter. The LLM reads the cluster's articles and decides: is this a geopolitical/conflict/humanitarian event, or is it sports, entertainment, or a product launch? Irrelevant clusters are discarded. Relevant ones get an initial title and summary.
 
-Clusters are batched in groups of 10 for throughput.
+Clusters are batched in groups of 10 for throughput. If an LLM call fails (timeout, rate limit, or API error), we retry with exponential backoff (up to 3 attempts); if it still fails, the cluster is marked `failed` and we move on so the pipeline doesn't block. At ~1k articles/day we stay under OpenAI rate limits; batching and the tier-based model choice (gpt-4o only for 3+ article clusters) keep token usage in check.
 
 ### Pass 2: Extraction (gpt-4o-mini)
 
@@ -181,7 +189,7 @@ After synthesis and conflict linking, events are enriched from multiple external
 | **UCDP** (Uppsala Conflict Data Program) | Battle-related fatalities | Any fatalities: +5; >100: +5 more |
 | **Wikipedia** | Entity enrichment | People, locations, organisations → `WikiEntity` table (extracts, thumbnails, Wikidata IDs) |
 
-Impact adjustments from enrichment are **clamped to ±15 points** to prevent external data from overwhelming the LLM's assessment.
+Impact adjustments from enrichment are **clamped to ±15 points** to prevent external data from overwhelming the LLM's assessment. If an external API (GDELT, ReliefWeb, UCDP) is down or times out, we skip enrichment for that event and leave impact as the LLM-assessed value; no retry queue, so we don't backlog. At current volume we're well under any public API rate limits.
 
 ### Event Relations
 
@@ -194,7 +202,7 @@ A separate sub-stage builds causal links between events using heuristics:
 | Each shared person | +0.15 | 0.45 |
 | Search window | — | 7 days |
 
-Relation types: `escalation_of`, `continuation_of`, `related_to`, `response_to`. The dashboard uses these to show "Related Events" on each event page; embedding-based relations (EventRelation) take priority over the heuristic fallback.
+Relation types: `escalation_of`, `continuation_of`, `related_to`, `response_to`. The dashboard uses these to show "Related Events" on each event page; embedding-based relations (EventRelation) take priority over the heuristic fallback. In the admin Pipeline view, the **Link-relations** and **Classify-relations** steps are the sub-jobs that build and type these EventRelation rows (heuristic scoring first, then optional LLM pass to classify the relation type).
 
 ## Stage 7: Publish — Alerts and Search Indexing
 
@@ -212,7 +220,12 @@ Events with impact ≥ 78 trigger a Telegram alert to a monitoring channel. The 
 Plus title, location, impact score, and a direct link.
 
 ### IndexNow
+
 All new events (not just high-impact) are submitted to the [IndexNow](https://indexnow.org) protocol, which notifies Bing, Yandex, Naver, and Seznam about new URLs. It's a single POST request with up to 10,000 URLs. Google doesn't support IndexNow, but the others do — and fast indexing matters for news content.
+
+### Briefings
+
+A separate job (every 20 minutes) builds a **briefing** from the last 24 hours of events: the LLM gets the event set and produces a short narrative summary plus key takeaways. The result is stored as a `Briefing` record and rendered at `/briefings/[slug]`; the same content is then used for social publishing.
 
 ### Social Publishing
 Briefings are auto-published to [X/Twitter](https://x.com/glob_crisis_mtr) and Threads. The X publisher does character-count budgeting (280 chars minus t.co URL length minus hashtags) to maximise the summary excerpt that fits.
@@ -234,7 +247,7 @@ The dashboard is a Next.js 16 app (App Router) that reads from the same Postgres
 
 ### Admin dashboard
 
-Alongside the public site, the same Next.js app has an **admin** area for pipeline ops and content curation. It’s the same Prisma + Postgres, with role-based access so only I can reach it. Four main views:
+Alongside the public site, the same Next.js app has an **admin** area for pipeline ops and content curation. It’s the same Prisma + Postgres, with role-based access so only I can reach it. Access is session-based (login); secrets (OpenAI key, Telegram bot token, DB URL) live in environment variables on the server, not in the repo. Four main views:
 
 **Overview** — High-level counts (articles, events, clusters, conflicts), recent activity, and a quick sense of pipeline throughput.
 
@@ -252,7 +265,7 @@ Alongside the public site, the same Next.js app has an **admin** area for pipeli
 
 <p style="margin: 1.5rem 0;"><img src="/images/blog/admin_vocabulary.png" alt="Admin vocabulary — categories, conflict types, impact labels" style="max-width: 100%; width: 900px; height: auto; border-radius: 8px;" /></p>
 
-The admin doesn’t run the pipeline (that’s the Hono ingester on cron); it’s for visibility and for cleaning up the data the pipeline produces.
+The admin doesn’t run the pipeline (that’s the Hono ingester on cron); it’s for visibility and for cleaning up the data the pipeline produces. For observability beyond the UI: the ingester logs structured JSON (stage, count, duration, errors) to stdout; Coolify captures logs. I don't run a separate metrics stack, but the admin Pipeline view plus "no events in the last 2 hours" is enough to notice when something's stuck. Alerts could be added (e.g. Telegram on repeated stage failure) if the pipeline were critical.
 
 ### SEO
 
@@ -286,6 +299,10 @@ Key design decisions:
 | **Vector columns everywhere** | Articles, Events, Conflicts (all 768-dim) have embedding columns for similarity |
 | **Pipeline status on Article** | `fetched → embedded → clustered → synthesized → failed` tracks progress |
 | **`FOR UPDATE SKIP LOCKED`** | Prevents concurrent runs from processing the same articles; safe for parallel invocation |
+
+**Backfill and schema changes.** When we add a stage or change logic, we re-run from the right place: e.g. after an embedding model change, reset `embedded` articles to `fetched` and re-run Embed and downstream. Prisma migrations apply to the shared DB; we run them before deploying a new ingester or dashboard version so the schema is always compatible. There's no separate backfill script — just "fix status and re-run the stage."
+
+**Data retention.** We keep all articles and events; no TTL or automatic pruning. For a side project at ~1k articles/day, storage is negligible. If we needed to reclaim space, we'd archive old articles (e.g. older than 1 year) to cold storage and keep events and clusters for the dashboard.
 
 ## Numbers and Thresholds
 
