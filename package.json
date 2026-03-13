@@ -17,6 +17,7 @@
     "@fontsource/instrument-serif": "^5.2.8",
     "@resvg/resvg-js": "^2.6.2",
     "astro": "^5.7.1",
+    "rehype-wrap-all": "^1.1.0",
     "satori": "^0.21.0"
   },
   "devDependencies": {

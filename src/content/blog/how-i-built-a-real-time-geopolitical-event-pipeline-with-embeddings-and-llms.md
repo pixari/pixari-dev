@@ -5,21 +5,25 @@ tags: ["Engineering", "AI", "Personal"]
 excerpt: "A deep technical walkthrough of a 7-stage pipeline that ingests 100+ RSS feeds, clusters articles with vector embeddings, synthesises structured events through multi-pass LLM processing, and serves them on a live dashboard with conflict tracking and automated alerting."
 ---
 
-I run a side project called [Global Crisis Monitor](https://global-crisis-monitor.com) — a real-time geopolitical intelligence dashboard that turns 100+ news feeds into structured, impact-scored events on a map. The first post covered the _why_. This one covers the _how_ — every pipeline stage, every threshold, every tradeoff I made along the way.
+I run a side project called [Global Crisis Monitor](https://global-crisis-monitor.com) — a real-time geopolitical intelligence dashboard that turns 100+ news feeds into structured, impact-scored events on a map. [The first post](/building-global-crisis-monitor-real-time-geopolitical-intelligence-dashboard/) covered the _why_. This one covers the _how_: every pipeline stage, every threshold, and every tradeoff I made along the way.
 
-The system runs continuously on a Hetzner server orchestrated by [Coolify](https://coolify.io), processes around 1,000 articles per day, and produces structured events that appear on the dashboard within minutes. Here's the full architecture.
+The system runs continuously on a Hetzner server orchestrated by [Coolify](https://coolify.io), processes around 1,000 articles per day, and produces structured events that appear on the dashboard within minutes. If you're building anything that turns many documents into deduplicated, structured insights — news aggregation, support-ticket triage, or research synthesis — the architecture in this post transfers directly.
+
+> **TL;DR** — A 7-stage pipeline: **Fetch** (RSS, incremental, watermarked) → **Embed** (Ollama, 768-dim) → **Cluster** (pgvector, 0.72 similarity, 20-min hold) → **Synthesize** (3-pass LLM: triage, extraction, assessment with calibration anchors) → **Conflict Link** (keyword + embedding, multi-match) → **Enrich** (GDELT, ReliefWeb, UCDP, Wikipedia) → **Publish** (Telegram, IndexNow, social). Key lesson: embed and cluster before you send anything to an LLM, or you get duplicates and drift.
 
 ## The Pipeline at a Glance
 
-The core runs as a **7-stage sequential pipeline**. Each stage reads from and writes to a shared PostgreSQL database (hosted on [Neon](https://neon.tech)), so stages are independently re-runnable without triggering the full pipeline.
+The core runs as a **7-stage sequential pipeline**. Each stage reads from and writes to a shared PostgreSQL database on the same server, so stages are independently re-runnable without triggering the full pipeline.
 
 ```
-Fetch → Embed → Cluster → Synthesize → Conflict Link → Enrich → Publish
+1. Fetch → 2. Embed → 3. Cluster → 4. Synthesize → 5. Conflict Link → 6. Enrich → 7. Publish
 ```
 
-The ingester is a [Hono](https://hono.dev) microservice running on [Bun](https://bun.sh). The dashboard is a [Next.js](https://nextjs.org) app (App Router, React 19). Both share the same Postgres through [Prisma](https://prisma.io).
+The ingester is a [Hono](https://hono.dev) microservice running on [Bun](https://bun.sh). The dashboard is a [Next.js](https://nextjs.org) app (App Router, React 19). Both share the same Postgres through [Prisma](https://prisma.io). Below is the full architecture, stage by stage.
 
-Let me walk through each stage.
+<p style="margin: 1.5rem 0;"><img src="/images/blog/pipeline.png" alt="Pipeline Health — stage status, processing times, article queue (fetched → embedded → clustered → synthesized), database totals" style="max-width: 100%; width: 900px; height: auto; border-radius: 8px;" /></p>
+
+<p style="margin: 1.5rem 0;"><img src="/images/blog/global-crisis-monitor.png" alt="Global Crisis Monitor dashboard — map, event feed, and latest briefing" style="max-width: 100%; width: 900px; height: auto; border-radius: 8px;" /></p>
 
 ## Stage 1: Fetch — Incremental RSS Ingestion
 
@@ -27,14 +31,19 @@ The first stage pulls from 100+ RSS feeds: Reuters, BBC, Al Jazeera, The Guardia
 
 Each `Feed` record in the database stores watermarks: `lastItemPubDate` and `lastItemUrl`. On every run, we only fetch articles published after the watermark. Feeds are tiered:
 
-- **Tier 1 (wire/breaking):** AP, Reuters, AFP — up to 15 articles per fetch
-- **Tier 2 (standard):** Everything else — up to 5 articles per fetch
+| Tier | Type | Examples | Max articles per fetch |
+|------|------|----------|-------------------------|
+| 1 | Wire/breaking | AP, Reuters, AFP | 15 |
+| 2 | Standard | All others | 5 |
 
-Every feed has a `credibilityWeight` between 0.75 and 0.96. Wire services and UN agencies sit near the top (0.95–0.96); opinion outlets and less-established sources land lower. These weights influence confidence scores downstream.
+Each feed is assigned a weight between 0.75 and 0.96. Wire services and UN agencies sit near the top (0.95–0.96); opinion outlets and less-established sources land lower. These weights influence confidence scores downstream.
 
 Deduplication starts here with two checks:
-1. **Exact URL match** — `Article.url` has a unique constraint
-2. **Content hash** — SHA-256 of the normalised title catches the same story syndicated across outlets
+
+| Check | How it works |
+|-------|--------------|
+| **Exact URL match** | `Article.url` has a unique constraint |
+| **Content hash** | SHA-256 of the normalised title catches the same story syndicated across outlets |
 
 Failed feeds increment a `consecutiveErrors` counter and are skipped after 5 consecutive failures, so one broken RSS feed can't stall the pipeline.
 
@@ -44,7 +53,7 @@ Every new article gets a 768-dimensional vector embedding via [Ollama](https://o
 
 The embeddings are batched (100 texts per Ollama request) and stored directly on the `Article` record as a `vector(768)` column in Postgres, leveraging pgvector.
 
-The key insight: **embed before you send anything to an LLM**. My first approach was to batch articles and send each batch directly to GPT-4 for synthesis. The result was duplicate events — the same incident in different batches became two separate events. Embeddings solve this by grouping first.
+The key insight: **embed before you send anything to an LLM**. My first approach was to batch articles and send each batch directly to GPT-4 for synthesis. The result was duplicate events — the same incident in different batches became two separate events. Vector embeddings solve this by grouping similar articles first; the LLM then only sees pre-grouped clusters.
 
 ## Stage 3: Cluster — HNSW-Accelerated Similarity Grouping
 
@@ -56,10 +65,12 @@ These two headlines produce embeddings with ~0.87 cosine similarity — well abo
 
 The clustering algorithm:
 
-1. Take all articles with status `embedded`
-2. For each article, search existing pending clusters using pgvector's cosine distance (`<=>` operator) against the cluster centroid
-3. If similarity ≥ 0.72, assign to that cluster and update the centroid as a running average: `centroid += (new_embedding - centroid) / n`
-4. If no match, create a new single-article cluster
+| Step | Action |
+|------|--------|
+| 1 | Take all articles with status `embedded` |
+| 2 | For each article, search existing pending clusters using pgvector's cosine distance (`<=>` operator) against the cluster centroid |
+| 3 | If similarity ≥ 0.72 → assign to that cluster; update centroid: `centroid += (new_embedding - centroid) / n` |
+| 4 | If no match → create a new single-article cluster |
 
 I use **HNSW indexes** on the vector columns for approximate nearest-neighbor search, which keeps cluster assignment sub-millisecond even as the article count grows.
 
@@ -67,7 +78,7 @@ One subtlety I learned the hard way: **you need a hold time before synthesis**. 
 
 ## Stage 4: Synthesize — Multi-Pass LLM Processing
 
-This is the most complex stage. Each mature cluster goes through three LLM passes:
+This is the most complex stage. Each mature cluster (one that has passed the 20-minute hold) goes through three LLM passes:
 
 ### Pass 1: Triage (gpt-4o-mini)
 
@@ -78,41 +89,50 @@ Clusters are batched in groups of 10 for throughput.
 ### Pass 2: Extraction (gpt-4o-mini)
 
 Structured metadata extraction from the cluster:
-- **Categories** from a controlled vocabulary (or new ones if needed)
-- **Entities** — organisations, governments, armed groups, with their roles
-- **People** — notable figures with titles
-- **Locations** — marked as primary (where the action happened) or secondary (mentioned but not central)
-- **Temporal data** — event date, ongoing-since date, deadlines
+
+| Field | Description |
+|-------|-------------|
+| **Categories** | Controlled vocabulary (or new ones if needed) |
+| **Entities** | Organisations, governments, armed groups, with their roles |
+| **People** | Notable figures with titles |
+| **Locations** | Primary (where the action happened) or secondary (mentioned but not central) |
+| **Temporal data** | Event date, ongoing-since date, deadlines |
 
 ### Pass 3: Assessment (gpt-4o or gpt-4o-mini)
 
 Here's where model selection gets interesting. Clusters with **3+ articles or tier-1 sources** use `gpt-4o` for assessment; smaller clusters use `gpt-4o-mini`. The reasoning: multi-source events are higher signal and justify the cost of a stronger model.
 
 The assessment produces:
-- **Sentiment direction:** Escalating / De-escalating / Stable / Unknown
-- **Sentiment intensity:** 0–100 (severity of current state)
-- **Multi-dimensional impact scores** (0–100 each):
-  - Humanitarian (casualties, displacement)
-  - Economic (market disruption, sanctions)
-  - Security (military, terrorism)
-  - Political (government changes, diplomacy)
-  - Overall (reflects the most significant dimension)
-- **Analysis notes** — 1–2 sentence analyst assessment
+
+| Output | Values / meaning |
+|--------|------------------|
+| **Sentiment direction** | Escalating / De-escalating / Stable / Unknown |
+| **Sentiment intensity** | 0–100 (severity of current state) |
+| **Impact scores** (0–100 each) | Humanitarian, Economic, Security, Political, Overall |
+| **Analysis notes** | 1–2 sentence analyst assessment |
+
+Impact dimensions: Humanitarian (casualties, displacement), Economic (market disruption, sanctions), Security (military, terrorism), Political (government changes, diplomacy). **Overall** reflects the most significant dimension.
 
 The prompt includes **calibration anchors** to keep impact scores consistent:
-- Russia-Ukraine invasion (2022): 95 overall
-- UN sanctions resolution: 45 overall
-- Minor border skirmish: 15 overall
-- Massive earthquake with international response: 75 overall
+
+| Example event | Overall score |
+|---------------|---------------|
+| Russia–Ukraine invasion (2022) | 95 |
+| UN sanctions resolution | 45 |
+| Minor border skirmish | 15 |
+| Massive earthquake with international response | 75 |
 
 Without anchors, LLMs drift — they either score everything as high-impact or compress all scores into a narrow band. The anchors keep the scale meaningful.
 
 ### Confidence Scoring
 
 After synthesis, confidence is scaled by source count:
-- 3+ sources: 1.0× confidence
-- 2 sources: 0.8×
-- 1 source: 0.6×
+
+| Sources | Confidence multiplier |
+|---------|------------------------|
+| 3+ | 1.0× |
+| 2 | 0.8× |
+| 1 | 0.6× |
 
 Single-source events are inherently less trustworthy, and the score reflects that.
 
@@ -124,11 +144,16 @@ After synthesising a new event, we check it against all existing events via embe
 
 Events don't exist in isolation. The conflict-link stage maps them to ongoing crises ("Russia-Ukraine War", "Israel-Palestine Conflict", "Iran Conflict Escalation") and detects new conflicts emerging from patterns.
 
+<p style="margin: 1.5rem 0;"><img src="/images/blog/conflict-pulse.png" alt="Conflict Pulse — conflict pages with status, linked events, and timeline" style="max-width: 100%; width: 900px; height: auto; border-radius: 8px;" /></p>
+
 ### Linking to Existing Conflicts
 
 Two-pass matching:
-1. **Keyword match (fast path):** Each conflict stores `locationKeywords` and `entityKeywords`. If the event text contains any keyword, it's linked. Events can link to **multiple** conflicts — a lesson I learned when "Iran Conflict Escalation" showed 0 events because the code had a `break` after the first match.
-2. **Embedding similarity (slow path):** If no keyword match, we compare the event embedding against conflict embeddings with a threshold of 0.72.
+
+| Pass | Type | How it works |
+|------|------|--------------|
+| 1 | **Keyword match** (fast) | Conflict has `locationKeywords` and `entityKeywords`; event text containing any keyword is linked. Events can link to **multiple** conflicts — I learned this when "Iran Conflict Escalation" showed 0 events because the code had a `break` after the first match. |
+| 2 | **Embedding similarity** (slow) | If no keyword match, compare event embedding to conflict embeddings; threshold 0.72. |
 
 ### Detecting New Conflicts
 
@@ -136,35 +161,55 @@ When 3+ unlinked events cluster together by topic, the LLM proposes a new confli
 
 ### Conflict Status Reassessment
 
-Every 6 hours, conflicts are reassessed based on recent event patterns: `escalating`, `active`, `de-escalating`, or `dormant`. A conflict with no events in 72 hours trends toward dormant.
+Every 6 hours, conflicts are reassessed based on recent event patterns:
+
+| Status | Meaning |
+|--------|---------|
+| `escalating` | Intensity increasing |
+| `active` | Ongoing |
+| `de-escalating` | Intensity decreasing |
+| `dormant` | No events in 72 hours → trends toward this |
 
 ## Stage 6: Enrich — External Data Integration
 
 After synthesis and conflict linking, events are enriched from multiple external sources:
 
-- **GDELT 2.0** — Event volume and tone. High volume (>500 mentions) bumps impact +5; strongly negative tone (<-3) adds another +5.
-- **ReliefWeb** (UN OCHA) — Active disasters in the event's region. One active disaster adds +3 impact; three or more add +5 more.
-- **UCDP** (Uppsala Conflict Data Program) — Battle-related fatalities. Any fatalities add +5; more than 100 add +5 more.
-- **Wikipedia** — Entity enrichment. People, locations, and organisations are looked up and cached in a `WikiEntity` table with extracts, thumbnails, and Wikidata IDs.
+| Source | What it adds | Impact adjustment |
+|--------|---------------|-------------------|
+| **GDELT 2.0** | Event volume and tone | High volume (>500 mentions): +5; strongly negative tone (<-3): +5 |
+| **ReliefWeb** (UN OCHA) | Active disasters in the event's region | One active disaster: +3; three or more: +5 more |
+| **UCDP** (Uppsala Conflict Data Program) | Battle-related fatalities | Any fatalities: +5; >100: +5 more |
+| **Wikipedia** | Entity enrichment | People, locations, organisations → `WikiEntity` table (extracts, thumbnails, Wikidata IDs) |
 
 Impact adjustments from enrichment are **clamped to ±15 points** to prevent external data from overwhelming the LLM's assessment.
 
 ### Event Relations
 
 A separate sub-stage builds causal links between events using heuristics:
-- Same location: +0.4 score
-- Each shared entity: +0.15 (max 0.45)
-- Each shared person: +0.15 (max 0.45)
-- Search window: 7 days
 
-Relations are typed: `escalation_of`, `continuation_of`, `related_to`, `response_to`. The dashboard uses these to show "Related Events" on each event page, with embedding-based relations (from EventRelation) taking priority over heuristic fallback.
+| Factor | Score | Cap |
+|--------|-------|-----|
+| Same location | +0.4 | — |
+| Each shared entity | +0.15 | 0.45 |
+| Each shared person | +0.15 | 0.45 |
+| Search window | — | 7 days |
+
+Relation types: `escalation_of`, `continuation_of`, `related_to`, `response_to`. The dashboard uses these to show "Related Events" on each event page; embedding-based relations (EventRelation) take priority over the heuristic fallback.
 
 ## Stage 7: Publish — Alerts and Search Indexing
 
 The final stage handles distribution:
 
 ### Telegram Alerts
-Events with impact ≥ 78 trigger a Telegram alert to a monitoring channel. The format is deliberate — emoji severity indicator (🚨 for 90+, ⚡ for 78+), title, location, impact score, and a direct link.
+
+Events with impact ≥ 78 trigger a Telegram alert to a monitoring channel. The format is deliberate:
+
+| Impact | Emoji |
+|--------|-------|
+| 90+ | 🚨 |
+| 78+ | ⚡ |
+
+Plus title, location, impact score, and a direct link.
 
 ### IndexNow
 All new events (not just high-impact) are submitted to the [IndexNow](https://indexnow.org) protocol, which notifies Bing, Yandex, Naver, and Seznam about new URLs. It's a single POST request with up to 10,000 URLs. Google doesn't support IndexNow, but the others do — and fast indexing matters for news content.
@@ -176,21 +221,50 @@ Briefings are auto-published to [X/Twitter](https://x.com/glob_crisis_mtr) and T
 
 The dashboard is a Next.js 16 app (App Router) that reads from the same Postgres. Key surfaces:
 
-- **Home** — Bento layout with a Leaflet map (markers by impact, flash events pulsing), event feed, and latest briefing
-- **`/news`** — Full searchable archive with TanStack Table + Query, server-side pagination/sort/filter by impact, location, people, entities, date range
-- **`/news/[slug]`** — Canonical event detail with JSON-LD `NewsArticle`, related events, linked conflicts, and source attribution
-- **`/briefings/[slug]`** — AI-generated briefings with JSON-LD `AnalysisNewsArticle`
-- **`/conflicts/[slug]`** — Conflict pages with JSON-LD `LiveBlogPosting`, causal narratives, and timeline of linked events
+| Route | Purpose |
+|-------|---------|
+| **Home** | Bento layout: Leaflet map (markers by impact, flash events pulsing), event feed, latest briefing |
+| **`/news`** | Searchable archive — TanStack Table + Query, server-side pagination/sort/filter by impact, location, people, entities, date range |
+| **`/news/[slug]`** | Event detail — JSON-LD `NewsArticle`, related events, linked conflicts, source attribution |
+| **`/briefings/[slug]`** | AI-generated briefings — JSON-LD `AnalysisNewsArticle` |
+| **`/conflicts/[slug]`** | Conflict pages — JSON-LD `LiveBlogPosting`, causal narratives, timeline of linked events |
+| **Admin** | Internal: overview, pipeline health, entities, vocabulary (role-protected) |
+
+<p style="margin: 1.5rem 0;"><img src="/images/blog/entity.png" alt="Entity Index — entity detail with metrics, 30-day activity graph, event timeline, and related conflicts" style="max-width: 100%; width: 900px; height: auto; border-radius: 8px;" /></p>
+
+### Admin dashboard
+
+Alongside the public site, the same Next.js app has an **admin** area for pipeline ops and content curation. It’s the same Prisma + Postgres, with role-based access so only I can reach it. Four main views:
+
+**Overview** — High-level counts (articles, events, clusters, conflicts), recent activity, and a quick sense of pipeline throughput.
+
+<p style="margin: 1.5rem 0;"><img src="/images/blog/admin_overview.png" alt="Admin overview — counts, recent activity, pipeline throughput" style="max-width: 100%; width: 900px; height: auto; border-radius: 8px;" /></p>
+
+**Pipeline** — Per-stage status, last run times, processing duration, and article queue (fetched → embedded → clustered → synthesized). Auto-refreshes so I can see at a glance if a stage is stuck or failing.
+
+<p style="margin: 1.5rem 0;"><img src="/images/blog/admin_pipeline.png" alt="Admin pipeline — stage status, run times, article queue" style="max-width: 100%; width: 900px; height: auto; border-radius: 8px;" /></p>
+
+**Entities** — Browse and edit the entities (people, organisations, locations) that the pipeline and LLM produce. Useful for merging duplicates, fixing names, or adjusting how entities attach to events.
+
+<p style="margin: 1.5rem 0;"><img src="/images/blog/admin_entities.png" alt="Admin entities — browse and edit people, organisations, locations" style="max-width: 100%; width: 900px; height: auto; border-radius: 8px;" /></p>
+
+**Vocabulary** — Manage the controlled vocabularies used in synthesis: categories, conflict types, impact labels. When the LLM invents a new category, it shows up here; I can promote it to the official list or fold it into an existing term so future events stay consistent.
+
+<p style="margin: 1.5rem 0;"><img src="/images/blog/admin_vocabulary.png" alt="Admin vocabulary — categories, conflict types, impact labels" style="max-width: 100%; width: 900px; height: auto; border-radius: 8px;" /></p>
+
+The admin doesn’t run the pipeline (that’s the Hono ingester on cron); it’s for visibility and for cleaning up the data the pipeline produces.
 
 ### SEO
 
-SEO for a news site is non-trivial. The current setup includes:
+SEO for a news site is non-trivial; the current setup includes:
 
-- **Dynamic sitemap** — All events, briefings, conflicts, entities, and countries with appropriate `changeFrequency` and `priority`
-- **Google News sitemap** — Separate `news-sitemap.xml` with `<news:news>` tags for events in the last 48 hours
-- **RSS feeds** — `/news/feed.xml` and `/briefings/feed.xml` with auto-discovery via `<link rel="alternate">`
-- **Structured data** — `NewsArticle`, `AnalysisNewsArticle`, and `LiveBlogPosting` schemas with full entity markup
-- **`llms.txt`** — Machine-readable site description for LLM crawlers
+| Component | What it does |
+|-----------|--------------|
+| **Dynamic sitemap** | All events, briefings, conflicts, entities, countries — `changeFrequency` and `priority` |
+| **Google News sitemap** | `news-sitemap.xml` with `<news:news>` tags for events in the last 48 hours |
+| **RSS feeds** | `/news/feed.xml`, `/briefings/feed.xml` — auto-discovery via `<link rel="alternate">` |
+| **Structured data** | `NewsArticle`, `AnalysisNewsArticle`, `LiveBlogPosting` with full entity markup |
+| **`llms.txt`** | Machine-readable site description for LLM crawlers |
 
 ## The Data Model
 
@@ -205,10 +279,13 @@ Feed → Article → ArticleCluster → Event → Conflict
 ```
 
 Key design decisions:
-- **M2M between Events and Conflicts** — An event can belong to multiple conflicts
-- **Vector columns everywhere** — Articles (768-dim), Events (768-dim), Conflicts (768-dim) all have embedding columns for similarity operations
-- **Pipeline status on Article** — `fetched → embedded → clustered → synthesized → failed` tracks each article through the pipeline
-- **`FOR UPDATE SKIP LOCKED`** — Prevents concurrent pipeline runs from processing the same articles, making the system safe for parallel invocation
+
+| Decision | Rationale |
+|----------|-----------|
+| **M2M Events ↔ Conflicts** | An event can belong to multiple conflicts |
+| **Vector columns everywhere** | Articles, Events, Conflicts (all 768-dim) have embedding columns for similarity |
+| **Pipeline status on Article** | `fetched → embedded → clustered → synthesized → failed` tracks progress |
+| **`FOR UPDATE SKIP LOCKED`** | Prevents concurrent runs from processing the same articles; safe for parallel invocation |
 
 ## Numbers and Thresholds
 
@@ -242,21 +319,46 @@ The 0.72 cluster threshold was lowered from 0.78 after switching from OpenAI emb
 
 **6. Self-hosted embeddings pay off fast.** At ~1,000 articles/day, OpenAI embedding costs were small but nonzero and added latency. Ollama running `nomic-embed-text` on the same server produces embeddings in milliseconds with zero API cost. The quality difference for clustering purposes is negligible.
 
+### What I'd Do Differently Next Time
+
+| Area | Current behaviour | Improvement |
+|------|-------------------|-------------|
+| Cluster centroids | Updated as articles join | Recompute from all member embeddings periodically for stability |
+| Triage | Some sports/entertainment clusters slip through | More negative examples in the triage prompt |
+| Conflict embeddings | Computed once at creation | Refresh from recent linked events to improve link accuracy |
+
 ## Stack Summary
 
-| Layer | Technology |
-|-------|-----------|
-| Ingester | Hono + Bun |
-| Dashboard | Next.js 16 + React 19 |
-| Database | PostgreSQL (Neon) + pgvector |
+**Runtime**
+
+| Component | Tech |
+|-----------|------|
+| Ingester | Hono, Bun |
+| Dashboard | Next.js 16, React 19 |
+| Hosting | Hetzner, Coolify |
+
+**Data**
+
+| Component | Tech |
+|-----------|------|
+| Database | PostgreSQL, pgvector |
 | ORM | Prisma 7 |
-| Embeddings | Ollama (nomic-embed-text, 768-dim) |
+
+**AI**
+
+| Component | Tech |
+|-----------|------|
+| Embeddings | Ollama (`nomic-embed-text`, 768-dim) |
 | LLM | OpenAI (gpt-4o, gpt-4o-mini) |
-| Hosting | Hetzner + Coolify |
+
+**Integrations**
+
+| Component | Tech |
+|-----------|------|
 | External data | GDELT, ReliefWeb, UCDP, Wikipedia |
-| Alerting | Telegram, X/Twitter, Threads |
+| Alerting | Telegram, X, Threads |
 | SEO | Dynamic sitemaps, Google News sitemap, IndexNow, JSON-LD |
 
-The pattern — **embed → cluster → synthesise → deduplicate → enrich → distribute** — is general-purpose. If you're building any system that turns many documents into structured, deduplicated insights — whether that's news, support tickets, research papers, or internal reports — the architecture transfers directly.
+The pattern — **fetch → embed → cluster → synthesise → conflict link → enrich → publish** — is general-purpose. If you're building any system that turns many documents into structured, deduplicated insights — whether that's news, support tickets, research papers, or internal reports — the architecture transfers directly.
 
-The source of Global Crisis Monitor is private, but the dashboard is live at [global-crisis-monitor.com](https://global-crisis-monitor.com). You can follow the automated feed at [@glob_crisis_mtr](https://x.com/glob_crisis_mtr) on X, or subscribe via [RSS](https://global-crisis-monitor.com/news/feed.xml).
+The source of Global Crisis Monitor is private, but the dashboard is live at [global-crisis-monitor.com](https://global-crisis-monitor.com). You can follow the automated feed at [@glob_crisis_mtr](https://x.com/glob_crisis_mtr) on X, or subscribe via [RSS](https://global-crisis-monitor.com/news/feed.xml). If you're building something similar or adapting this pipeline for another domain, I'd be curious to hear how it goes.

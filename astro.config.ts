@@ -1,5 +1,6 @@
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
+import rehypeWrapAll from 'rehype-wrap-all';
 
 export default defineConfig({
   site: 'https://pixari.dev',
@@ -23,5 +24,8 @@ export default defineConfig({
       },
       wrap: true,
     },
+    rehypePlugins: [
+      [rehypeWrapAll, { selector: 'table', wrapper: 'div.table-wrap' }],
+    ],
   },
 });

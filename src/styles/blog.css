@@ -672,6 +672,61 @@ a.blog-tag:hover {
   margin: 2rem 0;
 }
 
+/* Post body tables */
+.post-body .table-wrap {
+  overflow-x: auto;
+  margin: 1.75rem 0;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.post-body table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+  font-weight: 300;
+}
+
+.post-body thead {
+  background: rgba(126, 184, 255, 0.06);
+  border-bottom: 1px solid var(--border);
+}
+
+.post-body th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 500;
+  color: var(--text);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.post-body td {
+  padding: 0.7rem 1rem;
+  color: var(--text-secondary);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  vertical-align: top;
+}
+
+.post-body tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.post-body tbody tr:hover td {
+  background: rgba(126, 184, 255, 0.03);
+}
+
+.post-body td strong {
+  color: var(--text);
+}
+
+.post-body table code {
+  font-size: 0.85em;
+}
+
 .post-body hr {
   border: none;
   border-top: 1px solid var(--border);
